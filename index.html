@@ -1,151 +1,251 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Baby Ale 🛍️</title>
+<script type="module">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+// =======================
+// 🔥 FIREBASE
+// =======================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-<style>
-body{font-family:Poppins;background:#080e1e;color:white;margin:0}
-.screen{display:none;padding:20px}
-.screen.active{display:block}
-.btn{padding:12px;border:none;border-radius:10px;margin-top:10px;cursor:pointer;width:100%}
-.btn-green{background:#00e676;color:black}
-.nav{position:fixed;bottom:0;width:100%;display:flex;justify-content:space-around;background:#111}
-.nav button{background:none;color:white;border:none;padding:10px}
-</style>
-</head>
+import {
+  getFirestore, doc, setDoc, getDoc, updateDoc,
+  collection, getDocs, addDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<body>
+// ⚠️ CONFIGURA ESTO
+const firebaseConfig = {
+  apiKey: "TU_API",
+  authDomain: "TU_DOMINIO",
+  projectId: "TU_ID"
+};
 
-<header style="padding:10px;background:#111">🛍️ Baby Ale</header>
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
-<!-- LOGIN -->
-<div id="login" class="screen active">
-  <h2>Login</h2>
-  <input id="lEmail" placeholder="Correo"><br>
-  <input id="lPass" type="password" placeholder="Contraseña"><br>
-  <button class="btn btn-green" onclick="loginEmail()">Entrar</button>
-  <button class="btn" onclick="show('home')">Entrar sin cuenta</button>
-</div>
+// =======================
+// 🔐 ESTADO GLOBAL
+// =======================
+let currentUser = null;
+let isAdmin = false;
+let cart = [];
 
-<!-- HOME -->
-<div id="home" class="screen">
-  <h2>Inicio</h2>
-  <button class="btn" onclick="show('shop')">Tienda</button>
-  <button class="btn" onclick="show('cart')">Carrito</button>
-  <button class="btn" onclick="show('profile')">Perfil</button>
-</div>
+// ADMIN
+const ADMIN_EMAIL = "Panchito@gmail.com";
 
-<!-- TIENDA -->
-<div id="shop" class="screen">
-  <h2>Tienda</h2>
-  <button class="btn" onclick="addToCart('Producto 1',100)">Agregar producto</button>
-</div>
+// =======================
+// 🌎 MONEDA AUTOMÁTICA
+// =======================
+async function detectCurrency(){
+  try{
+    let res = await fetch("https://ipapi.co/json/");
+    let data = await res.json();
 
-<!-- CARRITO -->
-<div id="cart" class="screen">
-  <h2>Carrito</h2>
-  <div id="cartItems"></div>
-  <button class="btn btn-green" onclick="buy()">Comprar</button>
-  <button class="btn" onclick="clearCart()">Vaciar</button>
-</div>
+    const map = {
+      MX:"MXN",
+      US:"USD",
+      PE:"PEN",
+      DO:"DOP"
+    };
 
-<!-- PERFIL -->
-<div id="profile" class="screen">
-  <h2>Perfil</h2>
-  <button class="btn" onclick="logout()">Cerrar sesión</button>
-</div>
-
-<!-- NAV -->
-<div class="nav">
-  <button onclick="show('home')">🏠</button>
-  <button onclick="show('shop')">🛒</button>
-  <button onclick="show('cart')">🧺</button>
-  <button onclick="show('profile')">👤</button>
-</div>
-
-<script>
-// 🔥 NAVEGACIÓN
-function show(screen){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'))
-  document.getElementById(screen).classList.add('active')
+    return map[data.country_code] || "USD";
+  }catch{
+    return "USD";
+  }
 }
 
-// 🔥 LOGIN
-function loginEmail(){
-  let email = document.getElementById('lEmail').value
-  let pass = document.getElementById('lPass').value
+let currency = "USD";
 
-  if(!email || !pass){
-    alert("Llena todo")
-    return
+// =======================
+// 🔐 AUTH
+// =======================
+window.loginEmail = async () => {
+  let email = lEmail.value;
+  let pass = lPass.value;
+
+  let cred = await signInWithEmailAndPassword(auth,email,pass);
+  loadUser(cred.user);
+};
+
+window.register = async () => {
+  let cred = await createUserWithEmailAndPassword(auth,rEmail.value,rPass.value);
+
+  await setDoc(doc(db,"users",cred.user.uid),{
+    name:rName.value,
+    email:rEmail.value,
+    saldo:0
+  });
+
+  loadUser(cred.user);
+};
+
+window.loginGoogle = async () => {
+  let result = await signInWithPopup(auth,provider);
+  let user = result.user;
+
+  let ref = doc(db,"users",user.uid);
+  let snap = await getDoc(ref);
+
+  if(!snap.exists()){
+    await setDoc(ref,{
+      name:user.displayName,
+      email:user.email,
+      saldo:0
+    });
   }
 
-  alert("Login simulado")
-  show('home')
+  loadUser(user);
+};
+
+// =======================
+// 👤 CARGAR USUARIO
+// =======================
+async function loadUser(user){
+  currentUser = user;
+  isAdmin = user.email === ADMIN_EMAIL;
+
+  currency = await detectCurrency();
+
+  let snap = await getDoc(doc(db,"users",user.uid));
+  let data = snap.data();
+
+  saldoAmt.textContent = currency+" "+data.saldo;
+  welcomeName.textContent = "👋 "+data.name;
+
+  profileNameTxt.textContent = data.name;
+  profileEmailTxt.textContent = data.email;
+  profileSaldo.textContent = currency+" "+data.saldo;
+
+  show("home");
+
+  loadProducts();
+
+  if(isAdmin) loadAdmin();
 }
 
-// 🔥 REGISTER
-function register(){
-  alert("Registro simulado")
+// =======================
+// 🛍️ PRODUCTOS DESDE GITHUB
+// =======================
+async function loadProducts(){
+  let container = document.getElementById("products");
+
+  try{
+    let res = await fetch("https://raw.githubusercontent.com/TU_USUARIO/TU_REPO/main/products.json");
+    let products = await res.json();
+
+    renderProducts(products);
+
+  }catch{
+    container.innerHTML = "Error cargando productos";
+  }
 }
 
-// 🔥 CARRITO
-let cart = []
+function renderProducts(products){
+  let container = document.getElementById("products");
+  container.innerHTML = `<div class="products-grid"></div>`;
+  let grid = container.querySelector(".products-grid");
 
-function addToCart(name,price){
-  cart.push({name,price})
-  renderCart()
-  alert("Agregado")
+  products.forEach(p=>{
+    grid.innerHTML += `
+    <div class="product-card">
+      <img class="prod-img" src="${p.img}">
+      <div class="prod-body">
+        <div class="prod-name">${p.name}</div>
+        <div class="prod-price">${currency} ${p.price}</div>
+        <button class="btn btn-green" onclick="addToCart('${p.name}',${p.price})">Comprar</button>
+      </div>
+    </div>`;
+  });
 }
+
+// =======================
+// 🛒 CARRITO
+// =======================
+window.addToCart = (name,price)=>{
+  cart.push({name,price});
+  renderCart();
+};
 
 function renderCart(){
-  let box = document.getElementById('cartItems')
-  box.innerHTML = ""
+  let box = cartItems;
+  let total = 0;
 
-  if(cart.length==0){
-    box.innerHTML="Vacío"
-    return
-  }
+  box.innerHTML = "";
 
   cart.forEach(p=>{
-    box.innerHTML += `<p>${p.name} - $${p.price}</p>`
-  })
+    total+=p.price;
+    box.innerHTML += `<div class="cart-item">${p.name} - ${currency} ${p.price}</div>`;
+  });
+
+  cartTotalVal.textContent = currency+" "+total;
 }
 
-function clearCart(){
-  cart=[]
-  renderCart()
+// =======================
+// 💳 PAGOS (BASE)
+// =======================
+window.pay = (method)=>{
+  alert("Pago con "+method+" (conectar API real)");
+};
+
+// =======================
+// 👑 ADMIN
+// =======================
+async function loadAdmin(){
+  let usersDiv = adminUsers;
+  usersDiv.innerHTML = "";
+
+  let snap = await getDocs(collection(db,"users"));
+
+  snap.forEach(docu=>{
+    let u = docu.data();
+
+    usersDiv.innerHTML += `
+    <div class="user-row">
+      <div>${u.name}</div>
+      <div>${currency} ${u.saldo}</div>
+      <button onclick="addSaldo('${docu.id}')">💰</button>
+    </div>`;
+  });
 }
 
-function buy(){
-  if(cart.length==0){
-    alert("Carrito vacío")
-    return
-  }
-  alert("Compra hecha (fake)")
-  cart=[]
-  renderCart()
-}
+// 💰 SALDO
+window.addSaldo = async (uid)=>{
+  let amount = prompt("Cantidad:");
+  if(!amount) return;
 
-// 🔥 KEY
-function useKey(){
-  alert("Key usada (fake)")
-}
+  let ref = doc(db,"users",uid);
+  let snap = await getDoc(ref);
+  let data = snap.data();
 
-// 🔥 ADMIN
-function addProduct(){alert("Producto agregado")}
-function createKey(){alert("Key creada")}
+  await updateDoc(ref,{
+    saldo: data.saldo + Number(amount)
+  });
 
-// 🔥 PERFIL
-function logout(){
-  show('login')
-}
+  loadAdmin();
+};
 
-</script>
+// =======================
+// 🚪 LOGOUT
+// =======================
+window.logout = ()=> signOut(auth);
 
-</body>
-</html>
+// =======================
+// 🔄 AUTO LOGIN
+// =======================
+onAuthStateChanged(auth,user=>{
+  if(user) loadUser(user);
+  else show("login");
+});
+
+// =======================
+// 📱 UI
+// =======================
+window.show = (id)=>{
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+};
+
+        </script>
