@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baby Ale</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080e1e;--surface:#0d1528;--card:#111f38;--card2:#162240;--green:#00e676;--green2:#00c853;--blue:#2979ff;--pink:#ff4081;--gold:#ffd740;--text:#eaf0ff;--muted:#6b82a8;--border:rgba(255,255,255,0.07);--r:18px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 20% 10%,rgba(0,230,118,.06),transparent),radial-gradient(ellipse 50% 50% at 80% 80%,rgba(41,121,255,.06),transparent);pointer-events:none;z-index:0;}
+header{background:rgba(13,21,40,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;}
+.logo{font-size:1.15rem;font-weight:900;background:linear-gradient(90deg,var(--green),#00b0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+#hdrRight{display:flex;align-items:center;gap:8px;}
+#hdrSaldo{font-size:.78rem;font-weight:700;color:var(--green);display:none;background:rgba(0,230,118,.1);border-radius:20px;padding:4px 10px;}
+#currencyBtn{font-size:.65rem;font-weight:800;background:rgba(255,215,64,.1);border:1px solid rgba(255,215,64,.3);color:var(--gold);border-radius:20px;padding:3px 8px;cursor:pointer;display:none;}
+#avatarBtn{display:none;width:40px;height:40px;border-radius:50%;border:2.5px solid var(--green);cursor:pointer;background:var(--card2);align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;color:var(--green);flex-shrink:0;position:relative;}
+#avatarBtn.show{display:flex;}
+#avatarImg{display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;}
+#cartBadgeAv{position:absolute;top:-3px;right:-3px;background:var(--pink);color:white;border-radius:999px;font-size:.44rem;font-weight:900;min-width:14px;height:14px;display:none;align-items:center;justify-content:center;padding:0 2px;border:1.5px solid var(--bg);z-index:2;}
+#cartBadgeAv.show{display:flex;}
+#avatarMenu{position:absolute;top:62px;right:12px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:8px;z-index:400;display:none;min-width:215px;box-shadow:0 16px 48px rgba(0,0,0,.65);animation:fadeD .2s ease;}
+#avatarMenu.open{display:block;}
+@keyframes fadeD{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+.mi{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:.87rem;font-weight:700;transition:background .15s;border:none;background:none;color:var(--text);width:100%;text-align:left;}
+.mi:hover{background:rgba(255,255,255,.07);}
+.mi-ico{font-size:1rem;width:22px;text-align:center;}
+.mi.danger{color:#ff5252;}.mi.gold{color:var(--gold);}
+.mdiv{height:1px;background:var(--border);margin:4px 0;}
+.screen{display:none;padding:14px 13px 40px;position:relative;z-index:1;animation:fadeU .28s ease;}
+.screen.active{display:block;}
+#login{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 58px);padding:20px;position:relative;z-index:1;}
+@keyframes fadeU{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:14px;}
+.card-title{font-size:.95rem;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;border:none;padding:13px 20px;border-radius:13px;color:white;font-family:'Poppins',sans-serif;font-weight:700;font-size:.92rem;cursor:pointer;transition:all .18s;width:100%;margin-top:9px;}
+.btn:active{transform:scale(.96);}
+.btn-green{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;}
+.btn-blue{background:linear-gradient(135deg,#2979ff,#1565c0);}
+.btn-pink{background:linear-gradient(135deg,var(--pink),#c2185b);}
+.btn-gold{background:linear-gradient(135deg,#ffd740,#f9a825);color:#000;}
+.btn-wa{background:linear-gradient(135deg,#25d366,#128c7e);}
+.btn-ghost{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text);}
+.bsm{font-family:'Poppins',sans-serif;font-size:.72rem;font-weight:700;padding:5px 9px;border-radius:8px;cursor:pointer;border:1px solid;}
+.bsm-red{background:rgba(255,82,82,.15);border-color:rgba(255,82,82,.3);color:#ff5252;}
+.bsm-grn{background:rgba(0,230,118,.1);border-color:rgba(0,230,118,.3);color:var(--green);}
+.bsm-blu{background:rgba(41,121,255,.15);border-color:rgba(41,121,255,.3);color:#82b1ff;}
+.bsm-org{background:rgba(255,167,38,.15);border-color:rgba(255,167,38,.3);color:#ffa726;}
+.inp-wrap{position:relative;margin-bottom:10px;}
+.inp-wrap .ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:1rem;pointer-events:none;}
+input,textarea,select{width:100%;background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:11px;padding:11px 14px 11px 38px;color:var(--text);font-family:'Poppins',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;}
+textarea{padding:11px 14px;resize:vertical;min-height:70px;}
+select{padding:10px 12px;}
+input:focus,textarea:focus,select:focus{border-color:var(--green);}
+input::placeholder,textarea::placeholder{color:var(--muted);}
+.auth-box{width:100%;max-width:360px;}
+.auth-logo{text-align:center;margin-bottom:28px;}
+.auth-logo .big-icon{font-size:3.5rem;animation:flt 3s ease-in-out infinite;}
+@keyframes flt{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+.auth-logo h1{font-size:1.9rem;font-weight:900;margin-top:8px;background:linear-gradient(90deg,var(--green),#00b0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.auth-logo p{color:var(--muted);font-size:.88rem;margin-top:4px;}
+.tabs{display:flex;background:rgba(255,255,255,.05);border-radius:12px;padding:4px;margin-bottom:18px;}
+.tab-btn{flex:1;padding:9px;border:none;background:none;color:var(--muted);font-family:'Poppins',sans-serif;font-weight:700;font-size:.85rem;border-radius:9px;cursor:pointer;transition:all .18s;}
+.tab-btn.active{background:var(--card2);color:var(--green);}
+.auth-panel{display:none;}.auth-panel.active{display:block;}
+.hint{font-size:.72rem;color:var(--muted);margin-top:4px;padding-left:4px;}
+.divider{display:flex;align-items:center;gap:10px;margin:14px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.divider span{font-size:.75rem;color:var(--muted);font-weight:600;}
+.saldo-banner{background:linear-gradient(135deg,#0a2e1a,#0f3d24);border:1px solid rgba(0,230,118,.2);border-radius:22px;padding:22px;margin-bottom:14px;position:relative;overflow:hidden;}
+.saldo-banner::after{content:'💰';position:absolute;right:-8px;bottom:-12px;font-size:5rem;opacity:.12;}
+.saldo-tag{font-size:.7rem;font-weight:700;color:#69f0ae;text-transform:uppercase;letter-spacing:1px;}
+.saldo-amt{font-size:2.5rem;font-weight:900;line-height:1.1;margin:4px 0;}
+.saldo-name{color:#69f0ae;font-size:.9rem;margin-top:6px;}
+.hscroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.hscroll::-webkit-scrollbar{display:none;}
+.top-mini{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:10px 12px;min-width:100px;flex-shrink:0;text-align:center;position:relative;}
+.top-mini-ph{font-size:1.8rem;margin-bottom:4px;}
+.top-mini-img{width:50px;height:50px;object-fit:cover;border-radius:10px;margin-bottom:4px;}
+.top-mini-name{font-size:.72rem;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px;}
+.top-mini-badge{font-size:.6rem;font-weight:700;margin-top:2px;}
+.qa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.qa-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 8px;cursor:pointer;transition:all .2s;text-align:center;}
+.qa-card:hover{transform:translateY(-3px);border-color:rgba(0,230,118,.3);}
+.qa-icon{font-size:1.6rem;margin-bottom:5px;}
+.qa-label{font-size:.7rem;font-weight:700;color:var(--muted);}
+.buyer-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.buyer-row:last-child{border-bottom:none;}
+.buyer-av{width:30px;height:30px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--green);font-size:.85rem;}
+/* Productos por categoría */
+.cat-section{margin-bottom:20px;}
+.cat-hdr{font-size:.8rem;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;padding:8px 12px;background:var(--card2);border-radius:10px;display:flex;align-items:center;gap:6px;}
+.prod-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.prod-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:all .2s;}
+.prod-card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.4);}
+.prod-img{width:100%;aspect-ratio:1;object-fit:cover;background:var(--card2);}
+.prod-ph{width:100%;aspect-ratio:1;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:2.5rem;}
+.prod-body{padding:10px;}
+.prod-name{font-size:.82rem;font-weight:700;margin-bottom:2px;}
+.prod-desc{font-size:.68rem;color:var(--muted);margin-bottom:5px;line-height:1.4;}
+.prod-price{font-size:.85rem;color:var(--green);font-weight:800;margin-bottom:8px;}
+.seg-plat{background:var(--card2);border-radius:14px;padding:14px;margin-bottom:10px;}
+.seg-title{font-size:.85rem;font-weight:800;margin-bottom:10px;}
+.seg-opts{display:flex;flex-wrap:wrap;gap:6px;}
+.seg-opt{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:7px 12px;cursor:pointer;font-size:.78rem;font-weight:700;transition:all .18s;}
+.seg-opt:hover,.seg-opt.sel{border-color:var(--green);color:var(--green);background:rgba(0,230,118,.08);}
+.seg-res{background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.2);border-radius:12px;padding:14px;margin-top:10px;display:none;}
+.cart-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.cart-item:last-child{border-bottom:none;}
+.cart-total{display:flex;justify-content:space-between;font-weight:800;font-size:1.05rem;padding-top:12px;border-top:2px solid var(--border);margin-top:4px;}
+.empty-state{text-align:center;padding:30px 0;color:var(--muted);font-size:.88rem;}
+.es-icon{font-size:2.5rem;margin-bottom:8px;}
+.fkey-card{background:linear-gradient(135deg,#1a0a2e,#240f3d);border:1px solid rgba(255,215,64,.2);border-radius:18px;padding:18px;margin-bottom:14px;text-align:center;}
+.fkey-code{font-size:1.3rem;font-weight:900;color:var(--gold);letter-spacing:3px;margin:8px 0;}
+/* Métodos de pago */
+.pay-card{background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;}
+.pay-card-title{font-size:.88rem;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.pay-info{font-size:.82rem;color:var(--muted);line-height:1.8;word-break:break-all;}
+.pay-info strong{color:var(--text);}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.stat-card{background:var(--card2);border-radius:14px;padding:14px;text-align:center;}
+.stat-num{font-size:1.6rem;font-weight:900;}
+.stat-lbl{font-size:.7rem;color:var(--muted);font-weight:700;margin-top:2px;}
+.sec-hdr{font-size:.7rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.user-row{display:flex;align-items:flex-start;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.user-row:last-child{border-bottom:none;}
+.user-av{width:36px;height:36px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;font-weight:800;color:var(--green);}
+.user-inf{flex:1;min-width:0;}
+.user-name{font-size:.84rem;font-weight:700;}
+.user-meta{font-size:.68rem;color:var(--muted);margin-top:2px;}
+.user-phone{font-size:.68rem;color:#82b1ff;margin-top:1px;}
+.user-acts{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;width:100%;}
+.user-dis{opacity:.5;}
+.key-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);}
+.key-row:last-child{border-bottom:none;}
+.key-code{font-size:.85rem;font-weight:800;color:var(--gold);}
+.key-meta{font-size:.72rem;color:var(--muted);margin-top:2px;}
+.prof-hdr{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.prof-av{width:64px;height:64px;border-radius:50%;border:3px solid var(--green);background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);}
+.info-row:last-child{border-bottom:none;}
+.info-key{font-size:.78rem;color:var(--muted);font-weight:600;}
+.info-val{font-size:.85rem;font-weight:700;text-align:right;max-width:65%;word-break:break-all;}
+.dl-card{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid rgba(0,230,118,.2);border-radius:20px;padding:20px;margin-bottom:12px;text-align:center;}
+.dl-link{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-weight:800;font-size:.9rem;padding:13px;border-radius:13px;text-decoration:none;width:100%;margin-top:10px;}
+.wait-circle{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,rgba(0,230,118,.15),rgba(41,121,255,.15));border:3px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 14px;}
+.wait-timer{font-size:2rem;font-weight:900;color:var(--green);text-align:center;}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 20px;font-size:.88rem;font-weight:700;opacity:0;transition:all .3s;z-index:999;white-space:nowrap;pointer-events:none;max-width:92vw;text-align:center;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.ok{border-color:var(--green);color:var(--green);}
+#toast.err{border-color:#ff5252;color:#ff5252;}
+#toast.info{border-color:var(--blue);color:#82b1ff;}
+.loader{display:flex;align-items:center;justify-content:center;padding:20px;gap:8px;color:var(--muted);font-size:.88rem;}
+.spin{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:sp .7s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.modal-bg.open{display:flex;}
+.modal{background:var(--surface);border-radius:22px 22px 0 0;border-top:1px solid var(--border);width:100%;max-width:480px;padding:20px 18px 36px;animation:slideU .28s ease;max-height:85vh;overflow-y:auto;}
+@keyframes slideU{from{transform:translateY(60px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-title{font-size:1rem;font-weight:800;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.close-btn{background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;}
+.oinput{background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:11px;padding:11px 14px;color:var(--text);font-family:'Poppins',sans-serif;font-size:.9rem;outline:none;width:100%;margin-bottom:10px;}
+.oinput:focus{border-color:var(--green);}
+.settings-item{display:flex;align-items:center;justify-content:space-between;padding:14px;border-radius:14px;cursor:pointer;margin-bottom:4px;background:var(--card2);border:1px solid var(--border);transition:background .15s;}
+.settings-item:hover{background:rgba(255,255,255,.08);}
+.set-ico{width:38px;height:38px;border-radius:10px;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.setting-panel{display:none;padding:0 4px;margin-bottom:8px;}
+.setting-panel.open{display:block;}
+/* ADMIN PEDIDOS SEGUIDORES */
+.order-seg-card{background:linear-gradient(135deg,#0a1e2e,#0d2a3d);border:1px solid rgba(41,121,255,.2);border-radius:16px;padding:16px;margin-bottom:10px;}
+.order-seg-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.order-seg-badge{font-size:.65rem;font-weight:800;padding:3px 10px;border-radius:999px;}
+.badge-pending{background:rgba(255,167,38,.15);border:1px solid rgba(255,167,38,.3);color:#ffa726;}
+.badge-done{background:rgba(0,230,118,.15);border:1px solid rgba(0,230,118,.3);color:var(--green);}
+.notif-dot{width:8px;height:8px;border-radius:50%;background:var(--pink);display:inline-block;margin-left:4px;animation:pulse .8s ease infinite alternate;}
+@keyframes pulse{from{opacity:1;}to{opacity:.3;}}
+/* TICKET MODAL */
+.ticket-modal{background:linear-gradient(160deg,#0a1a2e,#0d2240);border:1px solid rgba(0,230,118,.25);border-radius:22px;padding:0;overflow:hidden;}
+.ticket-header{background:linear-gradient(135deg,#00e676,#00b0ff);padding:22px 18px;text-align:center;}
+.th-icon{font-size:2.5rem;margin-bottom:6px;}
+.th-title{font-size:1rem;font-weight:900;color:#000;margin-bottom:2px;}
+.th-sub{font-size:.72rem;color:rgba(0,0,0,.6);font-weight:700;}
+.ticket-uid{font-family:monospace;font-size:.65rem;background:rgba(0,0,0,.2);padding:4px 10px;border-radius:999px;color:#000;margin-top:6px;display:inline-block;}
+.ticket-body{padding:18px;}
+.ticket-row{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.ticket-row:last-child{border-bottom:none;}
+.ticket-key{font-size:.73rem;color:var(--muted);font-weight:600;}
+.ticket-val{font-size:.82rem;font-weight:800;text-align:right;max-width:60%;word-break:break-all;}
+.ticket-thanks{background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.15);border-radius:14px;padding:12px;text-align:center;margin-bottom:14px;}
+.ticket-claim{background:rgba(255,64,129,.06);border:1px solid rgba(255,64,129,.2);border-radius:14px;padding:12px;margin-bottom:10px;}
+.discount-badge{background:linear-gradient(135deg,#ff6f00,#f9a825);color:#000;font-size:.6rem;font-weight:900;padding:2px 8px;border-radius:999px;margin-left:6px;}
+.nosaldo-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:600;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:20px;}
+.nosaldo-overlay.open{display:flex;}
+.nosaldo-box{background:linear-gradient(160deg,#0a1f0e,#0f2e18);border:2px solid rgba(0,230,118,.35);border-radius:28px;padding:32px 24px;text-align:center;max-width:340px;width:100%;animation:popIn .3s ease;}
+@keyframes popIn{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+.tumbar-card{background:linear-gradient(135deg,#1a0a2e,#2d0d4a);border:1px solid rgba(147,51,234,.35);border-radius:20px;padding:20px;}
+.admin-tab-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px;scrollbar-width:none;}
+.admin-tab-bar::-webkit-scrollbar{display:none;}
+.admin-tab{padding:7px 14px;border-radius:20px;font-size:.72rem;font-weight:800;cursor:pointer;border:1.5px solid var(--border);background:var(--card2);color:var(--muted);white-space:nowrap;transition:all .18s;}
+.admin-tab.active{background:var(--green);color:#000;border-color:var(--green);}
+.admin-section{display:none;}
+.admin-section.active{display:block;}
+.rank-badge{display:inline-flex;align-items:center;gap:4px;font-size:.6rem;font-weight:900;padding:2px 8px;border-radius:999px;margin-left:6px;}
+.rank-bronce{background:rgba(205,127,50,.2);border:1px solid rgba(205,127,50,.4);color:#cd7f32;}
+.rank-plata{background:rgba(192,192,192,.2);border:1px solid rgba(192,192,192,.4);color:#c0c0c0;}
+.rank-oro{background:rgba(255,215,64,.2);border:1px solid rgba(255,215,64,.4);color:var(--gold);}
+.rank-diamante{background:rgba(0,230,118,.15);border:1px solid rgba(0,230,118,.35);color:var(--green);}
+.uid-search-wrap{display:flex;gap:8px;margin-bottom:14px;}
+.uid-search-wrap input{flex:1;}
+.uid-result{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;display:none;}
+.chart-bar-wrap{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.chart-bar-lbl{font-size:.7rem;font-weight:700;min-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.chart-bar-bg{flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden;}
+.chart-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--green),#00b0ff);transition:width .5s ease;}
+.chart-bar-val{font-size:.68rem;font-weight:800;color:var(--green);min-width:30px;text-align:right;}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🛍️ Baby Ale</div>
+  <div id="hdrRight">
+    <button id="currencyBtn" onclick="toggleCurrency()">🌎 MXN</button>
+    <span id="hdrSaldo"></span>
+    <div id="notifBtn" onclick="menuGo('notifs')" style="display:none;position:relative;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--border);cursor:pointer;align-items:center;justify-content:center;font-size:1.1rem;">
+      🔔<span id="notifBadge" style="position:absolute;top:-2px;right:-2px;background:var(--pink);color:white;border-radius:999px;font-size:.44rem;font-weight:900;min-width:14px;height:14px;display:none;align-items:center;justify-content:center;padding:0 2px;border:1.5px solid var(--bg);"></span>
+    </div>
+    <div id="avatarBtn" onclick="toggleMenu()">
+      <span id="avatarLetter">👤</span>
+      <img id="avatarImg" alt="">
+      <span id="cartBadgeAv"></span>
+    </div>
+  </div>
+</header>
+
+<div id="avatarMenu">
+  <button class="mi" onclick="menuGo('home')"><span class="mi-ico">🏠</span>Inicio</button>
+  <button class="mi" onclick="menuGo('shop')"><span class="mi-ico">🛒</span>Tienda</button>
+  <button class="mi" onclick="menuGo('cart')"><span class="mi-ico">🧺</span>Mi Carrito <span id="menuCC" style="margin-left:auto;background:var(--pink);color:white;border-radius:999px;font-size:.6rem;padding:1px 6px;display:none"></span></button>
+  <button class="mi" onclick="menuGo('keys')"><span class="mi-ico">🎁</span>Key Gratis</button>
+  <button class="mi" onclick="menuGo('seguidores')"><span class="mi-ico">📈</span>Seguidores</button>
+  <button class="mi" onclick="menuGo('pagos')"><span class="mi-ico">💳</span>Métodos de Pago</button>
+  <button class="mi" onclick="menuGo('notifs')"><span class="mi-ico">🔔</span>Notificaciones <span id="menuNotifCount" style="margin-left:auto;background:var(--pink);color:white;border-radius:999px;font-size:.6rem;padding:1px 6px;display:none"></span></button>
+  <button class="mi" onclick="menuGo('profile')"><span class="mi-ico">👤</span>Mi Perfil</button>
+  <div class="mdiv"></div>
+  <button class="mi gold" id="menuAdmin" onclick="menuGo('admin')" style="display:none"><span class="mi-ico">⚙️</span>Panel Admin</button>
+  <button class="mi danger" onclick="logout()"><span class="mi-ico">🚪</span>Cerrar sesión</button>
+</div>
+
+<!-- LOGIN -->
+<div id="login" class="screen active">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="big-icon">🛍️</div>
+      <h1>Baby Ale</h1>
+      <p>Tu tienda de confianza</p>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-login" onclick="switchTab('lpanel','rpanel','tab-login','tab-reg')">Iniciar Sesión</button>
+      <button class="tab-btn" id="tab-reg" onclick="switchTab('rpanel','lpanel','tab-reg','tab-login')">Crear Cuenta</button>
+    </div>
+    <!-- NOTIFICACIONES -->
+<div id="notifs" class="screen">
+  <div class="card">
+    <div class="card-title">🔔 Mis Notificaciones</div>
+    <div id="notifList"><div class="empty-state"><div class="es-icon">🔔</div>Sin notificaciones aún</div></div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+    <div id="lpanel" class="auth-panel active">
+      <div class="inp-wrap"><span class="ico">👤</span><input id="lUser" type="text" placeholder="Correo o nombre de usuario"></div>
+      <div class="inp-wrap"><span class="ico">🔒</span><input id="lPass" type="password" placeholder="Contraseña"></div>
+      <p class="hint">💡 Puedes usar tu correo o nombre de usuario</p>
+      <button class="btn btn-green" onclick="loginEmail()" style="margin-top:12px">🚀 Entrar</button>
+      <div class="divider"><span>o continúa con</span></div>
+      <button class="btn btn-ghost" onclick="loginGoogle()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34.5 6.5 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 16 19 12 24 12c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34.5 6.5 29.5 4 24 4 16.3 4 9.7 8.4 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.3 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8H6.3C9.6 35.6 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.3 4.1-4.1 5.5l6.2 5.2C37 39.3 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
+        Continuar con Google
+      </button>
+    </div>
+    <!-- REGISTRO -->
+    <div id="rpanel" class="auth-panel">
+      <div class="inp-wrap"><span class="ico">🏷️</span><input id="rUsername" type="text" placeholder="Nombre de usuario (sin espacios)"></div>
+      <div class="inp-wrap"><span class="ico">📱</span><input id="rPhone" type="tel" placeholder="Número de teléfono (opcional)"></div>
+      <div class="inp-wrap"><span class="ico">📧</span><input id="rEmail" type="email" placeholder="Correo electrónico"></div>
+      <div class="inp-wrap"><span class="ico">🔒</span><input id="rPass" type="password" placeholder="Contraseña (mín. 6 caracteres)"></div>
+      <div class="inp-wrap"><span class="ico">🔒</span><input id="rPass2" type="password" placeholder="Confirma tu contraseña"></div>
+      <div class="inp-wrap"><span class="ico">🎵</span><input id="rTiktok" type="text" placeholder="Tu usuario de TikTok (ej: @miusuario)"></div>
+      <p class="hint">🔒 Tu TikTok ayuda a verificar que eres un usuario real</p>
+      <button class="btn btn-pink" style="margin-top:12px" onclick="register()">✨ Crear mi cuenta</button>
+    </div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="home" class="screen">
+  <div class="saldo-banner">
+    <div class="saldo-tag">💰 Tu saldo disponible</div>
+    <div class="saldo-amt" id="saldoAmt">$0 MXN</div>
+    <div class="saldo-name" id="welcomeName">👋 Bienvenido</div>
+  </div>
+  <div class="card" id="topCompCard" style="display:none">
+    <div style="font-size:.78rem;font-weight:800;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between">👑 Top Compradores <span id="adminResetTopBtn" style="display:none;font-size:.65rem;font-weight:700;background:rgba(255,82,82,.15);border:1px solid rgba(255,82,82,.3);color:#ff5252;padding:3px 8px;border-radius:8px;cursor:pointer" onclick="resetTopCompradores()">🗑️ Resetear ranking</span></div>
+    <div id="topCompList"></div>
+  </div>
+  <div class="qa-grid">
+    <div class="qa-card" onclick="menuGo('shop')"><div class="qa-icon">🛒</div><div class="qa-label">Tienda</div></div>
+    <div class="qa-card" onclick="menuGo('keys')"><div class="qa-icon">🎁</div><div class="qa-label">Key Gratis</div></div>
+    <div class="qa-card" onclick="menuGo('seguidores')"><div class="qa-icon">📈</div><div class="qa-label">Seguidores</div></div>
+  </div>
+  <!-- Sin saldo: contactar -->
+  <div id="noSaldoBox" style="display:none">
+    <div class="card" style="background:linear-gradient(135deg,#0f1f0a,#162a0d);border-color:rgba(37,211,102,.25);text-align:center;padding:22px">
+      <div style="font-size:2rem;margin-bottom:8px">💬</div>
+      <div style="font-size:.9rem;font-weight:800;margin-bottom:4px">¿Sin saldo?</div>
+      <div style="font-size:.78rem;color:var(--muted);margin-bottom:14px">Contáctame por WhatsApp para recargar o realizar tu compra</div>
+      <button class="btn btn-wa" style="margin-top:0" onclick="contactWA()">📲 Contactar a Baby Ale</button>
+    </div>
+  </div>
+</div>
+
+<!-- TIENDA -->
+<div id="shop" class="screen">
+  <div id="products"><div class="loader"><div class="spin"></div> Cargando…</div></div>
+</div>
+
+<!-- CARRITO -->
+<div id="cart" class="screen">
+  <!-- Banner resumen -->
+  <div id="cartBanner" style="display:none;background:linear-gradient(135deg,#0a2e1a,#0f3d24);border:1px solid rgba(0,230,118,.2);border-radius:22px;padding:18px 20px;margin-bottom:14px;position:relative;overflow:hidden">
+    <div style="font-size:.68rem;font-weight:700;color:#69f0ae;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">🧺 Tu pedido</div>
+    <div style="display:flex;align-items:baseline;gap:8px">
+      <span id="cartBannerTotal" style="font-size:2rem;font-weight:900;color:var(--green)">$0</span>
+      <span id="cartBannerItems" style="font-size:.8rem;color:#69f0ae">0 artículos</span>
+    </div>
+    <div style="position:absolute;right:-10px;bottom:-14px;font-size:5rem;opacity:.1">🛍️</div>
+  </div>
+  <!-- Items por categoría -->
+  <div id="cartItems">
+    <div class="empty-state" style="padding:50px 0">
+      <div style="font-size:3rem;margin-bottom:12px">🛒</div>
+      <div style="font-weight:800;margin-bottom:4px">Tu carrito está vacío</div>
+      <div style="font-size:.8rem;color:var(--muted)">Agrega productos desde la tienda</div>
+      <button class="btn btn-green" style="margin-top:16px;width:auto;padding:10px 24px" onclick="menuGo('shop')">🛍️ Ir a la tienda</button>
+    </div>
+  </div>
+  <!-- Total y acciones -->
+  <div id="cartTotalBox" style="display:none">
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-size:.82rem;color:var(--muted);font-weight:600">Subtotal</span>
+        <span id="cartTotalVal" style="color:var(--green);font-size:1.1rem;font-weight:900"></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border)">
+        <span style="font-size:.82rem;color:var(--muted);font-weight:600">Tu saldo</span>
+        <span id="cartSaldoDisp" style="color:#82b1ff;font-size:.9rem;font-weight:800"></span>
+      </div>
+    </div>
+    <button class="btn btn-gold" style="margin-top:0;font-size:.82rem;padding:10px" onclick="document.getElementById('couponModal').classList.add('open')">🎟️ Tengo cupón de descuento</button>
+    <button class="btn btn-green" onclick="buy()" style="font-size:1rem;padding:15px">💳 Confirmar compra</button>
+    <button class="btn btn-ghost" style="margin-top:6px" onclick="clearCart()">🗑️ Vaciar carrito</button>
+  </div>
+</div>
+
+<!-- KEY GRATIS -->
+<div id="keys" class="screen">
+  <div id="freeKeysBox"><div class="loader"><div class="spin"></div></div></div>
+  <div class="card" style="margin-top:4px">
+    <div class="card-title">🔑 Canjear código</div>
+    <div class="inp-wrap"><span class="ico">🔑</span><input id="keyInput" placeholder="Escribe tu código…"></div>
+    <button class="btn btn-pink" onclick="useKey()">🎉 Canjear ahora</button>
+  </div>
+</div>
+
+<!-- SEGUIDORES -->
+<div id="seguidores" class="screen">
+  <div class="card">
+    <div class="card-title">📈 Comprar Seguidores</div>
+    <p style="color:var(--muted);font-size:.8rem;margin-bottom:14px">Precios en pesos mexicanos 🇲🇽. Selecciona plataforma y cantidad.</p>
+    <div class="seg-plat">
+      <div class="seg-title">🎵 TikTok — Seguidores</div>
+      <div class="seg-opts" id="opts-tiktok">
+        <div class="seg-opt" onclick="pickSeg(this,'tiktok',100,35)">100 × $35</div>
+        <div class="seg-opt" onclick="pickSeg(this,'tiktok',300,80)">300 × $80</div>
+        <div class="seg-opt" onclick="pickSeg(this,'tiktok',500,120)">500 × $120</div>
+        <div class="seg-opt" onclick="pickSeg(this,'tiktok',800,180)">800 × $180</div>
+        <div class="seg-opt" onclick="pickSeg(this,'tiktok',1000,220)">1K × $220</div>
+      </div>
+    </div>
+    <div class="seg-plat">
+      <div class="seg-title">📸 Instagram — Seguidores</div>
+      <div class="seg-opts" id="opts-igseg">
+        <div class="seg-opt" onclick="pickSeg(this,'igseg',100,50)">100 × $50</div>
+        <div class="seg-opt" onclick="pickSeg(this,'igseg',300,120)">300 × $120</div>
+        <div class="seg-opt" onclick="pickSeg(this,'igseg',500,190)">500 × $190</div>
+        <div class="seg-opt" onclick="pickSeg(this,'igseg',800,280)">800 × $280</div>
+        <div class="seg-opt" onclick="pickSeg(this,'igseg',1000,340)">1K × $340</div>
+      </div>
+    </div>
+    <div class="seg-plat">
+      <div class="seg-title">📘 Facebook — Seguidores Pág.</div>
+      <div class="seg-opts" id="opts-fb">
+        <div class="seg-opt" onclick="pickSeg(this,'fb',100,45)">100 × $45</div>
+        <div class="seg-opt" onclick="pickSeg(this,'fb',300,110)">300 × $110</div>
+        <div class="seg-opt" onclick="pickSeg(this,'fb',500,170)">500 × $170</div>
+        <div class="seg-opt" onclick="pickSeg(this,'fb',800,260)">800 × $260</div>
+        <div class="seg-opt" onclick="pickSeg(this,'fb',1000,310)">1K × $310</div>
+        <div class="seg-opt" onclick="pickSeg(this,'fb',3000,880)">3K × $880</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:4px;margin-bottom:0">
+      <div class="card-title" style="margin-bottom:8px">🔢 Cantidad personalizada</div>
+      <select id="segPlatCustom" style="margin-bottom:10px">
+        <option value="tiktok">🎵 TikTok</option>
+        <option value="igseg">📸 IG Seguidores</option>
+        <option value="fb">📘 Facebook</option>
+      </select>
+      <div class="inp-wrap"><span class="ico">🔢</span><input id="segCant" type="number" placeholder="Cantidad de seguidores…" min="1"></div>
+      <button class="btn btn-blue" style="margin-top:0" onclick="calcSeg()">💰 Calcular precio</button>
+      <div class="seg-res" id="segRes">
+        <div style="font-size:.75rem;color:var(--muted);margin-bottom:4px">Precio estimado:</div>
+        <div style="font-size:1.4rem;font-weight:900;color:var(--green)" id="segResPrice"></div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:4px" id="segResDesc"></div>
+        <button class="btn btn-green" style="margin-top:10px" onclick="openSegModal(null,null,null)">✅ Comprar ahora</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MÉTODOS DE PAGO -->
+<div id="pagos" class="screen">
+  <div class="card">
+    <div class="card-title">💳 Métodos de Pago</div>
+    <p style="color:var(--muted);font-size:.82rem;margin-bottom:14px">Elige cómo quieres recargar tu saldo o pagar directamente.</p>
+    <div id="payMethods"><div class="loader"><div class="spin"></div></div></div>
+  </div>
+  <div class="card" style="background:linear-gradient(135deg,#0f1f0a,#162a0d);border-color:rgba(37,211,102,.25);text-align:center">
+    <div style="font-size:1.3rem;margin-bottom:6px">📲</div>
+    <div style="font-size:.88rem;font-weight:800;margin-bottom:4px">¿Tienes dudas?</div>
+    <div style="font-size:.78rem;color:var(--muted);margin-bottom:14px">Escríbeme por WhatsApp y te ayudo a completar tu recarga</div>
+    <button class="btn btn-wa" style="margin-top:0" onclick="contactWA()">💬 Contactar a Baby Ale</button>
+  </div>
+</div>
+
+<!-- PERFIL -->
+<div id="profile" class="screen">
+  <div class="card">
+    <div class="prof-hdr">
+      <div class="prof-av" id="profileAvatar">👤</div>
+      <div>
+        <div style="font-size:1rem;font-weight:800" id="profileNameTxt"></div>
+        <p style="color:var(--muted);font-size:.78rem;margin-top:3px" id="profileEmailTxt"></p>
+      <div id="profileRankBadge" style="margin-top:4px"></div>
+      </div>
+    </div>
+    <div class="info-row"><span class="info-key">💰 Saldo</span><span class="info-val" id="profileSaldo" style="color:var(--green)">$0</span></div>
+    <div class="info-row"><span class="info-key">🏷️ Usuario</span><span class="info-val" id="profileUsername" style="color:var(--muted)">—</span></div>
+    <div class="info-row"><span class="info-key">🎵 TikTok</span><span class="info-val" id="profileTiktok" style="color:var(--muted)">—</span></div>
+    <div class="info-row"><span class="info-key">📱 Teléfono</span><span class="info-val" id="profilePhone">—</span></div>
+    <div class="info-row"><span class="info-key">🔑 UID</span><span class="info-val" style="font-size:.65rem;color:var(--muted)" id="profileUID"></span></div>
+    <div class="info-row"><span class="info-key">🛒 Compras</span><span class="info-val" id="profilePurchases" style="color:var(--blue)">0</span></div>
+    <div class="info-row"><span class="info-key">🏷️ Descuento activo</span><span class="info-val" id="profileDisc" style="color:var(--gold)">—</span></div>
+    <div style="margin-top:16px">
+      <div class="sec-hdr">⚙️ Ajustes de Cuenta</div>
+      <!-- Cambiar Nombre -->
+      <div class="settings-item" onclick="toggleSetting('settingName')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="set-ico">👤</div>
+          <div>
+            <div style="font-size:.87rem;font-weight:700">Cambiar Nombre</div>
+            <div style="font-size:.7rem;color:var(--muted)">Actualiza tu nombre de pantalla</div>
+          </div>
+        </div>
+        <div style="color:var(--muted);font-size:1rem">›</div>
+      </div>
+      <div id="settingName" class="setting-panel">
+        <div class="inp-wrap" style="margin-top:10px"><span class="ico">👤</span><input id="newNameSelf" placeholder="Nuevo nombre…"></div>
+        <button class="btn btn-blue" style="margin-top:0" onclick="changeSelfName()">💾 Guardar nombre</button>
+      </div>
+      <!-- Cambiar Teléfono -->
+      <div class="settings-item" onclick="toggleSetting('settingPhone')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="set-ico">📱</div>
+          <div>
+            <div style="font-size:.87rem;font-weight:700">Cambiar Teléfono</div>
+            <div style="font-size:.7rem;color:var(--muted)">Actualiza tu número de contacto</div>
+          </div>
+        </div>
+        <div style="color:var(--muted);font-size:1rem">›</div>
+      </div>
+      <div id="settingPhone" class="setting-panel">
+        <div class="inp-wrap" style="margin-top:10px"><span class="ico">📱</span><input id="newPhoneSelf" type="tel" placeholder="Nuevo número de teléfono…"></div>
+        <button class="btn btn-blue" style="margin-top:0" onclick="changeSelfPhone()">💾 Guardar teléfono</button>
+      </div>
+      <!-- Cambiar Usuario -->
+      <div class="settings-item" onclick="toggleSetting('settingUser')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="set-ico">🏷️</div>
+          <div>
+            <div style="font-size:.87rem;font-weight:700">Cambiar Usuario</div>
+            <div style="font-size:.7rem;color:var(--muted)">Cambia tu nombre de usuario</div>
+          </div>
+        </div>
+        <div style="color:var(--muted);font-size:1rem">›</div>
+      </div>
+      <div id="settingUser" class="setting-panel">
+        <div class="inp-wrap" style="margin-top:10px"><span class="ico">🏷️</span><input id="newUserSelf" placeholder="Nuevo nombre de usuario (sin espacios)…"></div>
+        <button class="btn btn-blue" style="margin-top:0" onclick="changeSelfUsername()">💾 Guardar usuario</button>
+      </div>
+      <!-- Cambiar Contraseña -->
+      <div class="settings-item" onclick="toggleSetting('settingPass')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="set-ico">🔒</div>
+          <div>
+            <div style="font-size:.87rem;font-weight:700">Cambiar Contraseña</div>
+            <div style="font-size:.7rem;color:var(--muted)">Actualiza tu contraseña de acceso</div>
+          </div>
+        </div>
+        <div style="color:var(--muted);font-size:1rem">›</div>
+      </div>
+      <div id="settingPass" class="setting-panel">
+        <div class="inp-wrap" style="margin-top:10px"><span class="ico">🔒</span><input id="newPassSelf" type="password" placeholder="Nueva contraseña (mín. 6 caracteres)…"></div>
+        <div class="inp-wrap"><span class="ico">🔒</span><input id="newPassSelf2" type="password" placeholder="Confirma tu contraseña…"></div>
+        <button class="btn btn-pink" style="margin-top:0" onclick="changeSelfPass()">🔑 Cambiar contraseña</button>
+      </div>
+      <!-- Verificar Correo -->
+      <div class="settings-item" onclick="toggleSetting('settingVerify')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="set-ico" id="verifyIco">📧</div>
+          <div>
+            <div style="font-size:.87rem;font-weight:700">Verificar Correo <span id="verifiedBadge" style="display:none;background:rgba(0,230,118,.15);border:1px solid rgba(0,230,118,.3);color:var(--green);font-size:.6rem;font-weight:800;padding:2px 7px;border-radius:999px;margin-left:4px">✅ Verificado</span></div>
+            <div style="font-size:.7rem;color:var(--muted)" id="verifySubtitle">Te llega un código real a tu Gmail</div>
+          </div>
+        </div>
+        <div style="color:var(--muted);font-size:1rem">›</div>
+      </div>
+      <div id="settingVerify" class="setting-panel">
+        <div id="verifyAlreadyDone" style="display:none;background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);border-radius:12px;padding:12px;margin-top:10px;font-size:.82rem;color:var(--green);text-align:center">✅ Tu correo ya está verificado</div>
+        <div id="verifyFlow">
+          <p style="font-size:.78rem;color:var(--muted);margin-bottom:10px;margin-top:10px">📧 Te enviaremos un código de 6 dígitos a tu correo Gmail. Solo funciona con correo/contraseña (no Google).</p>
+          <button class="btn btn-blue" id="sendVerifyBtn" style="margin-top:0" onclick="sendVerifyCode()">📨 Enviar código a mi correo</button>
+          <div id="verifyInputBox" style="display:none;margin-top:10px">
+            <div style="background:rgba(41,121,255,.08);border:1px solid rgba(41,121,255,.2);border-radius:10px;padding:10px;margin-bottom:10px;font-size:.75rem;color:#82b1ff">📬 Revisa tu bandeja de entrada (y spam). El código expira en 10 min.</div>
+            <div class="inp-wrap"><span class="ico">🔢</span><input id="verifyCodeInput" type="text" placeholder="Código de 6 dígitos…" maxlength="6" inputmode="numeric"></div>
+            <button class="btn btn-green" style="margin-top:0" onclick="confirmVerifyCode()">✅ Verificar correo</button>
+            <button class="btn btn-ghost" style="margin-top:6px;font-size:.8rem" onclick="sendVerifyCode()">🔁 Reenviar código</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Botón Recargar Saldo prominente -->
+    <div style="background:linear-gradient(135deg,rgba(0,230,118,.1),rgba(41,121,255,.1));border:1px solid rgba(0,230,118,.2);border-radius:16px;padding:16px;margin-top:14px;text-align:center">
+      <div style="font-size:.75rem;color:var(--muted);margin-bottom:6px">¿Necesitas saldo?</div>
+      <button class="btn btn-green" style="margin-top:0" onclick="menuGo('pagos')">💳 Recargar Saldo</button>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(147,51,234,.08),rgba(109,40,217,.08));border:1px solid rgba(147,51,234,.25);border-radius:16px;padding:16px;margin-top:14px;text-align:center">
+      <div style="font-size:.75rem;color:var(--muted);margin-bottom:6px">Servicios especiales</div>
+      <button class="btn" style="background:linear-gradient(135deg,#7c3aed,#4c1d95);margin-top:0;margin-bottom:8px" onclick="openTumbar()">💀 Tumbar Número — 50 MXN</button>
+      <button class="btn btn-gold" style="margin-top:0" onclick="document.getElementById('couponModal').classList.add('open')">🎟️ Tengo un cupón de descuento</button>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(147,51,234,.08),rgba(109,40,217,.08));border:1px solid rgba(147,51,234,.25);border-radius:16px;padding:16px;margin-top:14px;text-align:center">
+      <div style="font-size:.75rem;color:var(--muted);margin-bottom:6px">Servicios especiales</div>
+      <button class="btn" style="background:linear-gradient(135deg,#7c3aed,#4c1d95);margin-top:0;margin-bottom:8px" onclick="openTumbar()">💀 Tumbar Número — $450 MXN</button>
+      <button class="btn btn-gold" style="margin-top:0" onclick="document.getElementById('couponModal').classList.add('open')">🎟️ Tengo un cupón de descuento</button>
+    </div>
+    <button class="btn btn-ghost" style="margin-top:14px" onclick="logout()">🚪 Cerrar sesión</button>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="screen">
+  <div style="font-size:1.1rem;font-weight:900;margin-bottom:12px;display:flex;align-items:center;gap:8px">⚙️ Panel Admin <span id="pendingDot" class="notif-dot" style="display:none"></span></div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-num" id="statUsers" style="color:var(--blue)">0</div><div class="stat-lbl">👥 Usuarios</div></div>
+    <div class="stat-card"><div class="stat-num" id="statProds" style="color:var(--green)">0</div><div class="stat-lbl">📦 Productos</div></div>
+    <div class="stat-card"><div class="stat-num" id="statKeys" style="color:var(--gold)">0</div><div class="stat-lbl">🔑 Keys</div></div>
+    <div class="stat-card"><div class="stat-num" id="statOrds" style="color:var(--pink)">0</div><div class="stat-lbl">📦 Pedidos</div></div>
+    <div class="stat-card"><div class="stat-num" id="statIngresos" style="color:var(--green)">$0</div><div class="stat-lbl">💰 Ingresos</div></div>
+    <div class="stat-card"><div class="stat-num" id="statReclamos" style="color:#ffa726">0</div><div class="stat-lbl">📩 Reclamos</div></div>
+  </div>
+  <div class="admin-tab-bar">
+    <div class="admin-tab active" onclick="adminTab('tabPedidos')">📋 Pedidos</div>
+    <div class="admin-tab" onclick="adminTab('tabUsuarios')">👥 Usuarios</div>
+    <div class="admin-tab" onclick="adminTab('tabProductos')">📦 Productos</div>
+    <div class="admin-tab" onclick="adminTab('tabKeys')">🔑 Keys</div>
+    <div class="admin-tab" onclick="adminTab('tabPagos')">💳 Pagos</div>
+    <div class="admin-tab" onclick="adminTab('tabReclamos')">📩 Reclamos</div>
+    <div class="admin-tab" onclick="adminTab('tabEstadisticas')">📊 Stats</div>
+    <div class="admin-tab" onclick="adminTab('tabBroadcast')">📢 Anuncio</div>
+    <div class="admin-tab" onclick="adminTab('tabDescuentos')">🏷️ Descuentos</div>
+    <div class="admin-tab" onclick="adminTab('tabRanking')">👑 Ranking</div>
+    <div class="admin-tab" onclick="adminTab('tabTumbar')">📲 Tumbar Nums</div>
+  </div>
+
+  <!-- TAB: PEDIDOS -->
+  <div class="admin-section active" id="tabPedidos">
+    <div class="card" style="background:linear-gradient(135deg,#0a1e2e,#0d2a3d);border-color:rgba(255,64,129,.3)">
+      <div class="sec-hdr" style="color:var(--pink);border-color:rgba(255,64,129,.2)">📋 Pedidos Pendientes de Seguidores</div>
+      <div id="adminPendingOrders"><div class="loader"><div class="spin"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="sec-hdr">🛍️ Historial de Compras (Todos)</div>
+      <div id="adminAllOrders"><div class="loader"><div class="spin"></div></div></div>
+    </div>
+  </div>
+
+  <!-- TAB: USUARIOS -->
+  <div class="admin-section" id="tabUsuarios">
+    <div class="card">
+      <div class="sec-hdr">🔍 Buscar por UID</div>
+      <div class="uid-search-wrap">
+        <input id="uidSearchInput" placeholder="Pega el UID del usuario…" style="padding:11px 14px">
+        <button class="btn btn-blue" style="margin-top:0;width:auto;padding:10px 16px" onclick="searchByUID()">🔍</button>
+      </div>
+      <div id="uidResult" class="uid-result"></div>
+    </div>
+    <div class="card">
+      <div class="sec-hdr">👥 Cuentas Registradas</div>
+      <div id="adminUsers"><div class="loader"><div class="spin"></div></div></div>
+    </div>
+  </div>
+
+  <!-- TAB: PRODUCTOS -->
+  <div class="admin-section" id="tabProductos">
+    <div class="card">
+      <div class="sec-hdr">📦 Agregar Producto</div>
+      <div class="inp-wrap"><span class="ico">📝</span><input id="pName" placeholder="Nombre del producto"></div>
+      <div class="inp-wrap"><span class="ico">💲</span><input id="pPrice" placeholder="Precio (MXN)" type="number"></div>
+      <div class="inp-wrap"><span class="ico">🖼️</span><input id="pImg" placeholder="URL de imagen (opcional)"></div>
+      <div class="inp-wrap"><span class="ico">⏳</span><input id="pDuracion" placeholder="Duración (ej: 30 días, 1 año, Vitalicio)"></div>
+      <textarea id="pDesc" placeholder="Descripción del producto (opcional)" style="margin-bottom:10px"></textarea>
+      <div class="inp-wrap"><span class="ico">🔑</span><input id="pKey" placeholder="Key del producto (letras, números…)"></div>
+      <div class="inp-wrap"><span class="ico">🔗</span><input id="pLink1" placeholder="Link de descarga 1"></div>
+      <div class="inp-wrap"><span class="ico">🔗</span><input id="pLink2" placeholder="Link de descarga 2 (opcional)"></div>
+      <div class="inp-wrap"><span class="ico">🔗</span><input id="pLink3" placeholder="Link de descarga 3 (opcional)"></div>
+      <div class="inp-wrap"><span class="ico">📂</span>
+        <select id="pCat" style="padding:11px 14px 11px 38px">
+          <option value="">Sin categoría</option>
+          <option value="iPhone">📱 iPhone</option>
+          <option value="Android">🤖 Android</option>
+          <option value="PC">💻 PC / Software</option>
+          <option value="Cuentas">👤 Cuentas</option>
+          <option value="Otros">📦 Otros</option>
+        </select>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:.82rem;cursor:pointer"><input type="checkbox" id="pMV" style="width:auto;padding:0"> Más Vendido 🔥</label>
+      <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:.82rem;cursor:pointer"><input type="checkbox" id="pDC" style="width:auto;padding:0"> Drip Client 🔥</label>
+      <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:.82rem;cursor:pointer"><input type="checkbox" id="pDest" style="width:auto;padding:0"> Producto Destacado ⭐</label>
+      <button class="btn btn-green" onclick="addProduct()">➕ Agregar producto</button>
+    </div>
+    <div class="card">
+      <div class="sec-hdr">🗑️ Gestionar Productos</div>
+      <div id="adminProds"><div class="loader"><div class="spin"></div></div></div>
+    </div>
+  </div>
+
+  <!-- TAB: KEYS -->
+  <div class="admin-section" id="tabKeys">
+    <div class="card">
+      <div class="sec-hdr">🔑 Crear Key Gratis</div>
+      <div class="inp-wrap"><span class="ico">🏷️</span><input id="kCode" placeholder="Código (letras, palabras, números…)"></div>
+      <div class="inp-wrap"><span class="ico">🔢</span><input id="kUses" placeholder="Cantidad de usos" type="number"></div>
+      <div class="inp-wrap"><span class="ico">🔗</span><input id="kLink1" placeholder="Link de descarga al canjear (opcional)"></div>
+      <div class="inp-wrap"><span class="ico">🔗</span><input id="kLink2" placeholder="Link de descarga 2 (opcional)"></div>
+      <div class="inp-wrap"><span class="ico">🔑</span><input id="kProdKey" placeholder="Key del producto a mostrar (opcional)"></div>
+      <button class="btn btn-blue" onclick="createKey()">🔑 Crear Key</button>
+    </div>
+    <div class="card">
+      <div class="sec-hdr">🗝️ Keys Activas</div>
+      <div id="adminKeys"><div class="loader"><div class="spin"></div></div></div>
+    </div>
+  </div>
+
+  <!-- TAB: PAGOS -->
+  <div class="admin-section" id="tabPagos">
+    <div class="card">
+      <div class="sec-hdr">💳 Métodos de Pago (editar)</div>
+      <p style="font-size:.75rem;color:var(--muted);margin-bottom:12px">Agrega los métodos que quieres mostrar a tus clientes</p>
+      <div class="inp-wrap"><span class="ico">🏷️</span><input id="pmTitle" placeholder="Título (ej: Depósito BBVA, PayPal, OXXO Pay)"></div>
+      <textarea id="pmDesc" placeholder="Instrucciones / datos" style="margin-bottom:10px"></textarea>
+      <button class="btn btn-blue" onclick="addPayMethod()">➕ Agregar método de pago</button>
+      <div style="margin-top:12px" id="adminPayList"><div class="loader"><div class="spin"></div></div></div>
+    </div>
+  </div>
+
+  <!-- TAB: RECLAMOS -->
+  <div class="admin-section" id="tabReclamos">
+    <div class="card" style="background:linear-gradient(135deg,#1f0a0a,#2e1010);border-color:rgba(255,82,82,.25)">
+      <div class="sec-hdr" style="color:#ff5252;border-color:rgba(255,82,82,.2)">📩 Reclamos de Usuarios</div>
+      <p style="font-size:.75rem;color:var(--muted);margin-bottom:12px">Los mensajes que los usuarios envían desde su ticket de compra</p>
+      <div id="adminReclamos"><div class="loader"><div class="spin"></div></div></div>
+    </div>
+  </div>
+
+  <!-- TAB: ESTADISTICAS -->
+  <div class="admin-section" id="tabEstadisticas">
+    <div class="card">
+      <div class="sec-hdr">📊 Estadísticas Generales</div>
+      <div id="statsContent"><div class="loader"><div class="spin"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="sec-hdr">📈 Productos Más Vendidos</div>
+      <div id="statsTopProds"><div class="loader"><div class="spin"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="sec-hdr">💰 Ingresos por Mes</div>
+      <div id="statsIngresos"><div class="loader"><div class="spin"></div></div></div>
+    </div>
+  </div>
+
+  <!-- TAB: BROADCAST -->
+  <div class="admin-section" id="tabBroadcast">
+    <div class="card" style="background:linear-gradient(135deg,#1a0a2e,#240f3d);border-color:rgba(255,64,129,.25)">
+      <div class="sec-hdr" style="color:var(--pink);border-color:rgba(255,64,129,.15)">📢 Enviar Anuncio</div>
+      <p style="font-size:.75rem;color:var(--muted);margin-bottom:12px">Llegará como notificación a todos los usuarios</p>
+      <div class="inp-wrap"><span class="ico">📝</span><input id="broadTitle" placeholder="Título del anuncio (ej: ¡Nuevo producto!)"></div>
+      <textarea id="broadMsg" placeholder="Mensaje del anuncio…" style="margin-bottom:10px"></textarea>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-pink" style="margin-top:0" onclick="sendBroadcast()">📢 Enviar a todos</button>
+        <button class="btn btn-blue" style="margin-top:0" onclick="sendBroadcastVIP()">⭐ Solo VIP (10+ compras)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: DESCUENTOS -->
+  <div class="admin-section" id="tabDescuentos">
+    <div class="card">
+      <div class="sec-hdr">🏷️ Sistema de Descuentos Automáticos</div>
+      <div style="background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.15);border-radius:14px;padding:14px;margin-bottom:14px;font-size:.8rem;line-height:1.8">
+        <div>🥉 <strong>Bronce</strong> — 3+ compras → <strong style="color:var(--green)">5% desc</strong></div>
+        <div>🥈 <strong>Plata</strong> — 6+ compras → <strong style="color:var(--green)">10% desc</strong></div>
+        <div>🥇 <strong>Oro</strong> — 10+ compras → <strong style="color:var(--green)">15% desc</strong></div>
+        <div>💎 <strong>Diamante</strong> — 20+ compras → <strong style="color:var(--green)">20% desc</strong></div>
+      </div>
+      <p style="font-size:.75rem;color:var(--muted);margin-bottom:12px">Los descuentos se aplican automáticamente al confirmar una compra</p>
+      <div class="sec-hdr" style="margin-top:8px">🎟️ Cupón de Descuento Manual</div>
+      <div class="inp-wrap"><span class="ico">🏷️</span><input id="couponCode" placeholder="Código del cupón (ej: BABY20)"></div>
+      <div class="inp-wrap"><span class="ico">💲</span><input id="couponPct" type="number" placeholder="% de descuento (ej: 15)"></div>
+      <div class="inp-wrap"><span class="ico">🔢</span><input id="couponUses" type="number" placeholder="Usos máximos"></div>
+      <button class="btn btn-gold" onclick="createCoupon()">🎟️ Crear cupón</button>
+      <div style="margin-top:12px" id="couponList"><div class="loader"><div class="spin"></div></div></div>
+    </div>
+  </div>
+
+  <!-- TAB: RANKING -->
+  <div class="admin-section" id="tabRanking">
+    <div class="card">
+      <div class="sec-hdr">👑 Gestionar Top Compradores</div>
+      <p style="font-size:.75rem;color:var(--muted);margin-bottom:12px">Solo aparecen usuarios con 10+ compras en el ranking público</p>
+      <div id="adminTopComp"><div class="loader"><div class="spin"></div></div></div>
+      <button class="btn btn-pink" style="margin-top:12px" onclick="resetTopCompradores()">🗑️ Resetear todo el ranking</button>
+    </div>
+  </div>
+
+  <!-- TAB: TUMBAR NÚMEROS -->
+  <div class="admin-section" id="tabTumbar">
+    <div class="card">
+      <div class="sec-hdr">📲 Pedidos de Tumbar Números</div>
+      <p style="font-size:.75rem;color:var(--muted);margin-bottom:12px">Solicitudes enviadas por usuarios desde su perfil</p>
+      <div id="adminTumbarList"><div class="loader"><div class="spin"></div></div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- DESCARGA -->
+<div id="downloadPage" class="screen">
+  <div style="text-align:center;margin-bottom:20px">
+    <div style="font-size:2.5rem;margin-bottom:8px">🎉</div>
+    <div style="font-size:1.1rem;font-weight:900;color:var(--green)">¡Compra exitosa!</div>
+    <div style="font-size:.82rem;color:var(--muted);margin-top:4px">Aquí están tus archivos</div>
+  </div>
+  <div id="dlLinks"></div>
+  <button class="btn btn-ghost" style="margin-top:6px" onclick="menuGo('home')">🏠 Volver al inicio</button>
+</div>
+
+<!-- ESPERA SEGUIDORES -->
+<div id="waitPage" class="screen">
+  <div style="text-align:center;padding:30px 0">
+    <div class="wait-circle" id="waitEmoji">⏳</div>
+    <div style="font-size:1.1rem;font-weight:900;margin-bottom:6px" id="waitTitle">Procesando tu pedido</div>
+    <div style="font-size:.82rem;color:var(--muted);margin-bottom:20px" id="waitDesc">Tus seguidores llegarán en 1-2 horas</div>
+    <div class="wait-timer" id="waitTimer">2:00:00</div>
+    <div style="font-size:.72rem;color:var(--muted);margin-top:6px">Tiempo estimado</div>
+  </div>
+  <div class="card"><div class="sec-hdr">📋 Tu pedido</div><div id="waitSum"></div></div>
+  <div class="card" style="background:rgba(255,167,38,.05);border-color:rgba(255,167,38,.2)">
+    <div style="font-size:.8rem;font-weight:700;margin-bottom:6px">⚠️ Requisitos:</div>
+    <div style="font-size:.75rem;color:var(--muted);line-height:1.7">• Tu cuenta debe estar en <strong style="color:var(--text)">PÚBLICO</strong><br>• No cambies tu usuario durante el proceso<br>• Si tienes dudas escríbenos</div>
+  </div>
+  <button class="btn btn-ghost" onclick="menuGo('home')">🏠 Volver al inicio</button>
+</div>
+
+<!-- MODAL SEGUIDORES -->
+<div class="modal-bg" id="segModal">
+  <div class="modal">
+    <div class="modal-title">📲 Datos del pedido <button class="close-btn" onclick="closeModal('segModal')">✕</button></div>
+    <div style="font-size:.78rem;font-weight:700;margin-bottom:4px">Plataforma: <span id="smPlat" style="color:var(--green)"></span></div>
+    <div style="font-size:.78rem;font-weight:700;margin-bottom:12px">Cantidad: <span id="smQty" style="color:var(--green)"></span> · <span id="smPrice" style="color:var(--green)"></span></div>
+    <input class="oinput" id="segUser" placeholder="Tu usuario (ej: @miusuario)">
+    <input class="oinput" id="segLink2" placeholder="Link de tu perfil o post (opcional)">
+    <div style="background:rgba(255,167,38,.08);border:1px solid rgba(255,167,38,.2);border-radius:10px;padding:10px;margin-bottom:14px;font-size:.75rem;color:#ffa726">⚠️ Tu cuenta debe estar en <strong>PÚBLICO</strong> para recibir los seguidores</div>
+    <button class="btn btn-green" onclick="confirmSeg()">✅ Confirmar y pagar</button>
+  </div>
+</div>
+
+<!-- MODAL RECARGAR -->
+<div class="modal-bg" id="rechargeModal">
+  <div class="modal">
+    <div class="modal-title">💰 Ajustar Saldo <button class="close-btn" onclick="closeModal('rechargeModal')">✕</button></div>
+    <input type="hidden" id="rechargeUID">
+    <p id="rechargeUserName" style="color:var(--muted);font-size:.85rem;margin-bottom:6px"></p>
+    <p id="rechargeCurrentSaldo" style="color:var(--green);font-size:.88rem;font-weight:800;margin-bottom:14px"></p>
+    <div class="inp-wrap"><span class="ico">💲</span><input id="rechargeAmt" type="number" placeholder="Ej: 500 para agregar · -200 para quitar"></div>
+    <p style="font-size:.7rem;color:var(--muted);margin-bottom:10px;padding-left:4px">💡 Usa número positivo para agregar, negativo (ej: -500) para quitar saldo</p>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-green" style="margin-top:0" onclick="doRecharge(1)">➕ Agregar</button>
+      <button class="btn btn-pink" style="margin-top:0" onclick="doRecharge(-1)">➖ Quitar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CAMBIAR NOMBRE -->
+<div class="modal-bg" id="editNameModal">
+  <div class="modal">
+    <div class="modal-title">✏️ Cambiar Nombre <button class="close-btn" onclick="closeModal('editNameModal')">✕</button></div>
+    <input type="hidden" id="editNameUID">
+    <p id="editNameCurrent" style="color:var(--muted);font-size:.85rem;margin-bottom:14px"></p>
+    <div class="inp-wrap"><span class="ico">👤</span><input id="editNameVal" placeholder="Nuevo nombre…"></div>
+    <button class="btn btn-blue" onclick="doEditName()">💾 Guardar nombre</button>
+  </div>
+</div>
+
+<!-- MODAL CAMBIAR CONTRASEÑA -->
+<div class="modal-bg" id="resetPassModal">
+  <div class="modal">
+    <div class="modal-title">🔑 Cambiar Contraseña <button class="close-btn" onclick="closeModal('resetPassModal')">✕</button></div>
+    <input type="hidden" id="resetPassUID">
+    <input type="hidden" id="resetPassEmail">
+    <p id="resetPassUser" style="color:var(--muted);font-size:.85rem;margin-bottom:14px"></p>
+    <div class="inp-wrap"><span class="ico">🔒</span><input id="resetPassVal" type="password" placeholder="Nueva contraseña (mín. 6 caracteres)"></div>
+    <button class="btn btn-pink" onclick="doResetPass()">🔑 Cambiar contraseña</button>
+  </div>
+</div>
+
+
+<!-- MODAL TICKET COMPRA -->
+<div class="modal-bg" id="ticketModal">
+  <div class="modal ticket-modal" style="border-radius:22px;padding:0">
+    <div class="ticket-header">
+      <div class="th-icon">🧾</div>
+      <div class="th-title">Ticket de Compra</div>
+      <div class="th-sub">Baby Ale — Tu tienda de confianza</div>
+      <div class="ticket-uid" id="ticketUID">UID-XXXX</div>
+    </div>
+    <div class="ticket-body">
+      <div id="ticketRows"></div>
+      <hr class="ticket-divider">
+      <div class="ticket-thanks" id="ticketThanks">
+        <div style="font-size:1.3rem;margin-bottom:4px">🎉</div>
+        <div style="font-size:.85rem;font-weight:800;color:var(--green)">¡Gracias por tu compra!</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:3px">Cualquier duda estamos para ayudarte</div>
+      </div>
+      <div class="ticket-claim">
+        <div style="font-size:.78rem;font-weight:800;margin-bottom:8px;color:#ff8a80">📩 ¿Tienes un problema?</div>
+        <textarea id="claimMsg" class="oinput" placeholder="Describe tu problema o reclamo…" style="min-height:60px;margin-bottom:8px"></textarea>
+        <button class="btn btn-pink" style="margin-top:0;font-size:.82rem;padding:10px" onclick="sendClaim()">📤 Enviar reclamo</button>
+      </div>
+      <button class="btn btn-ghost" style="margin-top:8px;font-size:.82rem" onclick="closeModal('ticketModal')">✕ Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY SIN SALDO (bonito) -->
+<div class="nosaldo-overlay" id="nosaldoOverlay">
+  <div class="nosaldo-box">
+    <div style="font-size:3.5rem;margin-bottom:12px;animation:flt 2s ease-in-out infinite">💸</div>
+    <div style="font-size:1.2rem;font-weight:900;color:var(--green);margin-bottom:6px">Saldo Insuficiente</div>
+    <div style="font-size:.85rem;color:var(--muted);margin-bottom:6px">No tienes suficiente saldo para comprar este producto.</div>
+    <div style="font-size:.82rem;color:var(--text);font-weight:700;margin-bottom:20px">¡Contáctame y te ayudo a recargarlo! 🙌</div>
+    <button class="btn btn-wa" onclick="contactWANoSaldo()" style="margin-top:0;margin-bottom:10px">💬 Contactar a Baby Ale</button>
+    <button class="btn btn-ghost" style="margin-top:0;font-size:.82rem" onclick="document.getElementById('nosaldoOverlay').classList.remove('open')">✕ Cerrar</button>
+  </div>
+</div>
+
+<!-- MODAL TUMBAR NÚMEROS -->
+<div class="modal-bg" id="tumbarModal">
+  <div class="modal">
+    <div class="modal-title">📲 Tumbar Número de WhatsApp <button class="close-btn" onclick="closeModal('tumbarModal')">✕</button></div>
+    <div style="background:linear-gradient(135deg,rgba(147,51,234,.1),rgba(109,40,217,.1));border:1px solid rgba(147,51,234,.3);border-radius:14px;padding:14px;margin-bottom:14px;text-align:center">
+      <div style="font-size:1.6rem;margin-bottom:4px">💀</div>
+      <div style="font-size:.88rem;font-weight:900;color:#c084fc">Tumbar Número</div>
+      <div style="font-size:1.4rem;font-weight:900;color:var(--gold);margin-top:6px">$450 MXN</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:2px">Pago antes de procesar el servicio</div>
+    </div>
+    <div class="inp-wrap"><span class="ico">📱</span><input id="tumbarNumero" placeholder="Número a tumbar (con código país, ej: 521XXXXXXXXXX)" type="tel"></div>
+    <textarea id="tumbarMensaje" class="oinput" placeholder="Mensaje o razón del servicio (opcional)…" style="min-height:70px;margin-bottom:10px"></textarea>
+    <div style="background:rgba(255,167,38,.08);border:1px solid rgba(255,167,38,.2);border-radius:10px;padding:10px;margin-bottom:14px;font-size:.73rem;color:#ffa726">⚠️ Al enviar esta solicitud, acepto que es bajo mi responsabilidad. El pago se confirma por WhatsApp con el admin.</div>
+    <button class="btn btn-pink" onclick="sendTumbarRequest()">🚀 Enviar solicitud — $450 MXN</button>
+  </div>
+</div>
+
+<!-- MODAL CUPON -->
+<div class="modal-bg" id="couponModal">
+  <div class="modal">
+    <div class="modal-title">🎟️ Aplicar Cupón <button class="close-btn" onclick="closeModal('couponModal')">✕</button></div>
+    <div class="inp-wrap"><span class="ico">🏷️</span><input id="couponInput" placeholder="Escribe tu código de cupón…"></div>
+    <button class="btn btn-gold" onclick="applyCoupon()">✅ Aplicar cupón</button>
+    <div id="couponResult" style="margin-top:10px;font-size:.82rem;text-align:center"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signInWithPopup,GoogleAuthProvider,onAuthStateChanged,signOut,updatePassword}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import{getFirestore,doc,getDoc,setDoc,updateDoc,deleteDoc,collection,getDocs,addDoc,onSnapshot,query,where,limit}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// EmailJS para envío real de correos
+const EMAILJS_PUBLIC="YClhT9Gn5Vl_glHGG";
+const EMAILJS_SERVICE="service_jnk9sw6";
+const EMAILJS_TEMPLATE="template_kvv5kec";
+
+const FC={apiKey:"AIzaSyDidH1YAWtPeaOfsSz12EGyRVdK1vrMk1A",authDomain:"baby-alee-f8392.firebaseapp.com",projectId:"baby-alee-f8392",storageBucket:"baby-alee-f8392.firebasestorage.app",messagingSenderId:"982008626122",appId:"1:982008626122:web:513cb339e6a5d9b46b2d33"};
+const ADMIN="rexchino09@gmail.com";
+const WA_NUM="526121697959"; // Tu WhatsApp
+const app=initializeApp(FC),auth=getAuth(app),db=getFirestore(app),gp=new GoogleAuthProvider();
+let CU=null,UD={},cart=JSON.parse(localStorage.getItem("baCart")||"[]"),menuOpen=false,currency="MXN";
+const rates={MXN:1,USD:0.051,EUR:0.047};
+const sym={MXN:"MXN$",USD:"USD$",EUR:"€"};
+let pendSeg={platform:"",qty:0,price:0};
+const SNAMES={tiktok:"🎵 TikTok",igseg:"📸 IG Seguidores",fb:"📘 Facebook"};
+const SRATES={tiktok:35,igseg:50,fb:45};
+
+function toast(m,t="ok"){const el=document.getElementById("toast");el.textContent=m;el.className="show "+t;clearTimeout(el._t);el._t=setTimeout(()=>el.className="",3200);}
+
+// ─── MONEDA ───────────────────────────────────────────────
+function fmt(mxn){const v=mxn*rates[currency];return sym[currency]+(currency==="MXN"?Math.round(v):v.toFixed(2));}
+function toggleCurrency(){
+  const o=["MXN","USD","EUR"];
+  currency=o[(o.indexOf(currency)+1)%3];
+  document.getElementById("currencyBtn").textContent="🌎 "+currency;
+  // Actualizar TODOS los precios visibles
+  updateHdrSaldo();
+  renderCart();
+  document.querySelectorAll(".prod-price-val").forEach(el=>{
+    const mxn=Number(el.dataset.mxn);
+    if(!isNaN(mxn))el.textContent=fmt(mxn);
+  });
+  document.querySelectorAll(".seg-opt").forEach(el=>{
+    const mxn=Number(el.dataset.mxn);
+    const qty=Number(el.dataset.qty);
+    if(!isNaN(mxn)&&!isNaN(qty))el.textContent=qty>=1000?(qty/1000)+"K × "+fmt(mxn):qty+" × "+fmt(mxn);
+  });
+}
+function toggleMenu(){menuOpen=!menuOpen;document.getElementById("avatarMenu").classList.toggle("open",menuOpen);}
+function menuGo(s){menuOpen=false;document.getElementById("avatarMenu").classList.remove("open");show(s);}
+document.addEventListener("click",e=>{if(!e.target.closest("#avatarBtn")&&!e.target.closest("#avatarMenu")){menuOpen=false;document.getElementById("avatarMenu").classList.remove("open");}});
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  if(id==="shop")renderProducts();
+  if(id==="cart")renderCart();
+  if(id==="admin")loadAdmin();
+  if(id==="profile")renderProfile();
+  if(id==="home"){renderTopCompradores();checkNoSaldo();checkUserNotifications();}
+  if(id==="notifs"){renderNotifList();}
+  if(id==="keys")loadFreeKeys();
+  if(id==="pagos")loadPayMethods();
+}
+function switchTab(a,b,c,d){document.getElementById(a).classList.add("active");document.getElementById(b).classList.remove("active");document.getElementById(c).classList.add("active");document.getElementById(d).classList.remove("active");}
+function closeModal(id){document.getElementById(id).classList.remove("open");}
+
+// ─── WhatsApp ─────────────────────────────────────────────
+function contactWA(){
+  const name=UD.name||"Usuario";
+  const msg=encodeURIComponent(`Hola Baby Ale! Ocupo recargar saldo. Mi nombre es ${name}`);
+  window.open(`https://wa.me/${WA_NUM}?text=${msg}`,"_blank");
+}
+function checkNoSaldo(){
+  const box=document.getElementById("noSaldoBox");
+  if(CU&&(UD.saldo||0)===0)box.style.display="block";
+  else box.style.display="none";
+}
+
+// ─── AUTH ─────────────────────────────────────────────────
+async function loginEmail(){
+  const ui=document.getElementById("lUser").value.trim(),p=document.getElementById("lPass").value;
+  if(!ui||!p)return toast("Completa todos los campos","err");
+  let em=ui;
+  if(!ui.includes("@")){
+    try{const q=query(collection(db,"users"),where("username","==",ui.toLowerCase()),limit(1));const sn=await getDocs(q);if(sn.empty)return toast("Usuario no encontrado","err");em=sn.docs[0].data().email;}
+    catch(e){return toast("Intenta con tu correo directamente","err");}
+  }
+  try{await signInWithEmailAndPassword(auth,em,p);}catch(e){toast(tErr(e.code),"err");}
+}
+
+async function register(){
+  const un=document.getElementById("rUsername").value.trim().toLowerCase().replace(/\s+/g,""),
+        ph=document.getElementById("rPhone").value.trim(),
+        em=document.getElementById("rEmail").value.trim(),
+        pw=document.getElementById("rPass").value,
+        pw2=document.getElementById("rPass2").value,
+        tt=document.getElementById("rTiktok").value.trim();
+  if(!un||!em||!pw)return toast("Completa los campos obligatorios","err");
+  if(pw.length<6)return toast("La contraseña debe tener al menos 6 caracteres","err");
+  if(pw!==pw2)return toast("Las contraseñas no coinciden","err");
+  try{const q=query(collection(db,"users"),where("username","==",un),limit(1));const sn=await getDocs(q);if(!sn.empty)return toast("Ese nombre de usuario ya está en uso","err");}catch(e){console.warn(e.code);}
+  try{
+    const cr=await createUserWithEmailAndPassword(auth,em,pw);
+    await setDoc(doc(db,"users",cr.user.uid),{name:un,username:un,phone:ph,email:em,tiktok:tt,saldo:0,disabled:false,purchases:0,createdAt:new Date().toISOString()});
+    toast("✅ Cuenta creada correctamente","ok");
+  }catch(e){toast(tErr(e.code),"err");}
+}
+
+async function loginGoogle(){
+  try{const r=await signInWithPopup(auth,gp);const u=r.user;const rf=doc(db,"users",u.uid);const sn=await getDoc(rf);if(!sn.exists()){const un=(u.displayName||"user").toLowerCase().replace(/\s+/g,"")+"_"+u.uid.slice(0,4);await setDoc(rf,{name:u.displayName||"Usuario",username:un,phone:u.phoneNumber||"",email:u.email,tiktok:"",saldo:0,disabled:false,purchases:0,createdAt:new Date().toISOString()});}}
+  catch(e){toast(tErr(e.code),"err");}
+}
+async function logout(){menuOpen=false;document.getElementById("avatarMenu").classList.remove("open");await signOut(auth);cart=[];saveCart();location.reload();}
+function tErr(c){const m={"auth/user-not-found":"No existe cuenta con ese correo","auth/wrong-password":"Contraseña incorrecta","auth/invalid-credential":"Correo/usuario o contraseña incorrectos","auth/email-already-in-use":"Este correo ya está registrado","auth/weak-password":"La contraseña es muy débil","auth/invalid-email":"El correo no es válido","auth/popup-closed-by-user":"Cerraste la ventana de Google","auth/network-request-failed":"Sin conexión","auth/requires-recent-login":"Necesitas volver a iniciar sesión","auth/unauthorized-domain":"⚠️ Agrega tu dominio en Firebase → Authentication → Authorized domains"};return m[c]||"Error: "+c;}
+
+onAuthStateChanged(auth,async u=>{
+  if(u){
+    CU=u;
+    await checkPP(u);
+    const sn=await getDoc(doc(db,"users",u.uid));
+    UD=sn.exists()?sn.data():{name:u.displayName||"Usuario",saldo:0};
+    if(UD.disabled){await signOut(auth);toast("Tu cuenta está deshabilitada","err");return;}
+    document.getElementById("login").classList.remove("active");document.getElementById("login").style.display="none";
+    document.getElementById("avatarBtn").classList.add("show");
+    document.getElementById("currencyBtn").style.display="block";
+    if(u.photoURL){document.getElementById("avatarImg").src=u.photoURL;document.getElementById("avatarImg").style.display="block";document.getElementById("avatarLetter").style.display="none";}
+    else document.getElementById("avatarLetter").textContent=(UD.name||u.email||"U")[0].toUpperCase();
+    document.getElementById("hdrSaldo").style.display="block";
+    if(u.email===ADMIN){document.getElementById("menuAdmin").style.display="flex";const rb=document.getElementById("adminResetTopBtn");if(rb)rb.style.display="block";}
+    updateHdrSaldo();show("home");updateWelcome();checkUserNotifications();
+    onSnapshot(doc(db,"users",u.uid),d=>{if(d.exists()){UD=d.data();updateHdrSaldo();updateWelcome();checkNoSaldo();}});
+  }else{
+    CU=null;
+    document.getElementById("hdrSaldo").style.display="none";
+    document.getElementById("avatarBtn").classList.remove("show");
+    document.getElementById("currencyBtn").style.display="none";
+    document.getElementById("login").style.display="";
+    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+    document.getElementById("login").classList.add("active");
+  }
+});
+async function checkPP(u){try{const sn=await getDoc(doc(db,"users",u.uid));if(!sn.exists())return;const d=sn.data();if(d.pendingPass){await updatePassword(u,d.pendingPass);await updateDoc(doc(db,"users",u.uid),{pendingPass:null});toast("🔑 Tu contraseña fue actualizada por el admin","info");}}catch(e){}}
+
+function updateHdrSaldo(){
+  const s=fmt(UD.saldo||0);
+  document.getElementById("hdrSaldo").textContent=s;
+  document.getElementById("saldoAmt").textContent=s+" "+currency;
+  document.getElementById("profileSaldo").textContent=s;
+}
+function updateWelcome(){
+  document.getElementById("welcomeName").textContent="👋 Hola, "+(UD.name||"Usuario");
+  document.getElementById("profileNameTxt").textContent=UD.name||"Usuario";
+  document.getElementById("profileEmailTxt").textContent=UD.email||CU?.email||"";
+  document.getElementById("profilePhone").textContent=UD.phone||"—";
+  document.getElementById("profileUsername").textContent=UD.username?"@"+UD.username:"—";
+  document.getElementById("profileTiktok").textContent=UD.tiktok||"—";
+  document.getElementById("profileUID").textContent=CU?.uid||"";
+  if(!CU?.photoURL)document.getElementById("avatarLetter").textContent=(UD.name||CU?.email||"U")[0].toUpperCase();
+  if(document.getElementById("profilePurchases"))document.getElementById("profilePurchases").textContent=(UD.purchases||0)+" compras";
+  const disc=getDiscount();
+  if(document.getElementById("profileDisc"))document.getElementById("profileDisc").textContent=disc>0?((disc*100).toFixed(0)+"% descuento automático"):"Sin descuento aún";
+  renderProfileRank();
+}
+function renderProfile(){updateHdrSaldo();updateWelcome();}
+
+// ─── SECCIONES HOME ───────────────────────────────────────
+async function renderMasVendido(){
+  const bar=document.getElementById("barMasVendido");
+  bar.innerHTML='<div class="loader" style="padding:8px"><div class="spin"></div></div>';
+  try{
+    const sn=await getDocs(collection(db,"products"));const all=[];
+    sn.forEach(d=>{if(d.data().masVendido)all.push({id:d.id,...d.data()});});
+    if(!all.length){bar.innerHTML='<span style="color:var(--muted);font-size:.8rem;padding:10px">Sin destacados aún</span>';return;}
+    bar.innerHTML="";all.forEach(p=>{const c=document.createElement("div");c.className="top-mini";c.style.cursor="pointer";c.onclick=()=>menuGo("shop");
+    c.innerHTML=(p.img?`<img class="top-mini-img" src="${p.img}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">`:"")+
+      (p.img?'<div class="top-mini-ph" style="display:none">📦</div>':'<div class="top-mini-ph">📦</div>')+
+      `<div class="top-mini-name">${p.name}</div><div class="top-mini-badge" style="color:var(--green)">${fmt(p.price)}</div>`;
+    bar.appendChild(c);});
+  }catch(e){bar.innerHTML="";}
+}
+
+async function renderDrip(){
+  const bar=document.getElementById("barDrip");
+  bar.innerHTML='<div class="loader" style="padding:8px"><div class="spin"></div></div>';
+  try{
+    const sn=await getDocs(collection(db,"products"));const all=[];
+    sn.forEach(d=>{if(d.data().dripCaliente)all.push({id:d.id,...d.data()});});
+    if(!all.length){bar.innerHTML='<span style="color:var(--muted);font-size:.8rem;padding:10px">Sin drips por ahora</span>';return;}
+    bar.innerHTML="";all.forEach(p=>{const c=document.createElement("div");c.className="top-mini";c.style.cursor="pointer";c.style.borderColor="rgba(255,167,38,.3)";c.onclick=()=>menuGo("shop");
+    c.innerHTML=(p.img?`<img class="top-mini-img" src="${p.img}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">`:"")+
+      (p.img?'<div class="top-mini-ph" style="display:none">🔥</div>':'<div class="top-mini-ph">🔥</div>')+
+      `<div class="top-mini-name">${p.name}</div><div class="top-mini-badge" style="color:#ffa726">Drip Client</div>`;
+    bar.appendChild(c);});
+  }catch(e){bar.innerHTML="";}
+}
+
+async function renderDestacado(){
+  const bar=document.getElementById("barDestacado");
+  bar.innerHTML='<div class="loader" style="padding:8px"><div class="spin"></div></div>';
+  try{
+    const sn=await getDocs(collection(db,"products"));const all=[];
+    sn.forEach(d=>{if(d.data().destacado)all.push({id:d.id,...d.data()});});
+    if(!all.length){bar.innerHTML='<span style="color:var(--muted);font-size:.8rem;padding:10px">Sin productos destacados aún</span>';return;}
+    bar.innerHTML="";all.forEach(p=>{const c=document.createElement("div");c.className="top-mini";c.style.cursor="pointer";c.style.borderColor="rgba(0,176,255,.3)";c.onclick=()=>menuGo("shop");
+    c.innerHTML=(p.img?`<img class="top-mini-img" src="${p.img}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">`:"")+
+      (p.img?'<div class="top-mini-ph" style="display:none">⭐</div>':'<div class="top-mini-ph">⭐</div>')+
+      `<div class="top-mini-name">${p.name}</div><div class="top-mini-badge" style="color:#00b0ff">${p.desc||"Producto destacado"}</div>`;
+    bar.appendChild(c);});
+  }catch(e){bar.innerHTML="";}
+}
+
+async function renderTopCompradores(){
+  const card=document.getElementById("topCompCard"),list=document.getElementById("topCompList");
+  try{const sn=await getDocs(collection(db,"users"));const buyers=[];sn.forEach(d=>{const u=d.data();if((u.purchases||0)>=10)buyers.push({name:u.name||"Usuario",count:u.purchases||0});});buyers.sort((a,b)=>b.count-a.count);const top=buyers.slice(0,5);
+  if(!top.length){card.style.display="none";return;}card.style.display="block";
+  const medals=["🥇","🥈","🥉","4️⃣","5️⃣"];
+  list.innerHTML=top.map((b,i)=>`<div class="buyer-row"><div style="font-size:1rem;width:24px;text-align:center">${medals[i]}</div><div class="buyer-av">${b.name[0].toUpperCase()}</div><div><div style="font-size:.82rem;font-weight:700">${b.name}</div><div style="font-size:.68rem;color:var(--muted)">${b.count} compra${b.count!==1?"s":""}</div></div></div>`).join("");}
+  catch(e){card.style.display="none";}
+}
+
+// ─── TIENDA EN TIEMPO REAL (onSnapshot) ──────────────────
+let _shopUnsub=null;
+function renderProducts(){
+  const box=document.getElementById("products");
+  box.innerHTML='<div class="loader"><div class="spin"></div> Cargando…</div>';
+  if(_shopUnsub){_shopUnsub();_shopUnsub=null;}
+  _shopUnsub=onSnapshot(collection(db,"products"),async sn=>{
+    if(sn.empty){box.innerHTML='<div class="empty-state"><div class="es-icon">📦</div>No hay productos disponibles</div>';return;}
+    // Agrupar por categoría
+    const catIcons={iPhone:"📱",Android:"🤖",PC:"💻",Cuentas:"👤",Otros:"📦","":" "};
+    const cats={};
+    sn.forEach(d=>{const p={id:d.id,...d.data()};const cat=p.cat||"";if(!cats[cat])cats[cat]=[];cats[cat].push(p);});
+    box.innerHTML="";
+    let totalProds=0;
+    for(const [cat,prods] of Object.entries(cats)){
+      const sec=document.createElement("div");sec.className="cat-section";
+      if(cat){sec.innerHTML=`<div class="cat-hdr">${catIcons[cat]||"📦"} ${cat}</div>`;}
+      const grid=document.createElement("div");grid.className="prod-grid";
+      prods.forEach(p=>{
+        totalProds++;
+        const c=document.createElement("div");c.className="prod-card";
+        c.innerHTML=(p.img?`<img class="prod-img" src="${p.img}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:"")+
+          `<div class="prod-ph" style="${p.img?"display:none":""}">📦</div>
+           <div class="prod-body">
+             <div class="prod-name">${p.name}</div>
+             ${p.desc?`<div class="prod-desc">${p.desc}</div>`:""}
+             <div class="prod-price"><span class="prod-price-val" data-mxn="${p.price}">${fmt(p.price)}</span></div>
+             ${p.destacado?`<div style="font-size:.65rem;color:#00b0ff;margin-bottom:5px">⭐ Destacado</div>`:""}
+             <button class="btn btn-green" style="margin-top:0;padding:9px 14px;font-size:.8rem" onclick='addToCart(${JSON.stringify({id:p.id,name:p.name,price:p.price})})'>🛒 Agregar</button>
+           </div>`;
+        grid.appendChild(c);
+      });
+      sec.appendChild(grid);box.appendChild(sec);
+    }
+    if(!totalProds)box.innerHTML='<div class="empty-state"><div class="es-icon">📦</div>No hay productos disponibles</div>';
+  },err=>{box.innerHTML='<div class="empty-state"><div class="es-icon">⚠️</div>Error al cargar</div>';});
+}
+
+// ─── KEYS ─────────────────────────────────────────────────
+async function useKey(){
+  const code=document.getElementById("keyInput").value.trim().toUpperCase();
+  if(!code)return toast("Escribe un código","err");
+  if(!CU)return toast("Inicia sesión primero","err");
+  try{
+    const rf=doc(db,"keys",code);const sn=await getDoc(rf);
+    if(!sn.exists())return toast("❌ Código inválido","err");
+    const k=sn.data();if(k.uses<=0)return toast("❌ Este código ya no tiene usos disponibles","err");
+    const ur=doc(db,"keys",code,"used",CU.uid);const us=await getDoc(ur);
+    if(us.exists())return toast("❌ Ya canjeaste este código con esta cuenta","err");
+    await updateDoc(doc(db,"users",CU.uid),{purchases:(UD.purchases||0)+1});
+    await updateDoc(rf,{uses:k.uses-1});
+    await setDoc(ur,{at:new Date().toISOString(),uid:CU.uid});
+    // Notificación
+    await addDoc(collection(db,"notifications"),{uid:CU.uid,type:"key",message:`🎁 Key canjeada: ${code}`,date:new Date().toISOString(),read:false});
+    // Copiar al portapapeles
+    try{await navigator.clipboard.writeText(code);}catch(e){}
+    document.getElementById("keyInput").value="";
+    // Si la key tiene links/producto asociado, mostrarlo
+    const links=[];
+    if(k.link1)links.push({name:"Key "+code,label:"Descarga 1",url:k.link1,key:k.productKey||code});
+    if(k.link2)links.push({name:"Key "+code,label:"Descarga 2",url:k.link2,key:""});
+    if(k.link3)links.push({name:"Key "+code,label:"Descarga 3",url:k.link3,key:""});
+    if(links.length){
+      toast("🎉 ¡Key canjeada! Mostrando links de descarga…","ok");
+      setTimeout(()=>showDL(links),600);
+    } else {
+      toast("🎉 ¡Key canjeada y copiada al portapapeles!","ok");
+      loadFreeKeys();
+    }
+  }catch(e){toast("Error al canjear","err");}
+}
+
+async function loadFreeKeys(){
+  const box=document.getElementById("freeKeysBox");
+  try{const sn=await getDocs(collection(db,"keys"));const free=[];sn.forEach(d=>{if(d.data().uses>0)free.push({id:d.id,...d.data()});});
+  if(!free.length){box.innerHTML='<div class="fkey-card"><div style="font-size:2rem;margin-bottom:8px">🔑</div><div style="font-size:.9rem;font-weight:700;color:var(--muted)">No hay keys disponibles</div></div>';return;}
+  box.innerHTML=free.map(k=>`<div class="fkey-card"><div style="display:inline-block;background:rgba(255,215,64,.15);border:1px solid rgba(255,215,64,.3);color:var(--gold);font-size:.65rem;font-weight:800;padding:3px 10px;border-radius:999px;margin-bottom:10px">Key Gratis 🎉</div><div style="font-size:2rem;margin-bottom:4px">🔑</div><div class="fkey-code">${k.id}</div><div style="font-size:.72rem;color:var(--muted)">Usos disponibles: ${k.uses}</div><button class="btn btn-gold" style="margin-top:12px;width:auto;padding:9px 20px;font-size:.82rem" onclick="copyKey('${k.id}')">📋 Canjear y copiar</button></div>`).join("");}
+  catch(e){box.innerHTML="";}
+}
+
+// Al canjear desde la tarjeta, también copia
+function copyKey(c){document.getElementById("keyInput").value=c;useKey();}
+
+// ─── CARRITO ──────────────────────────────────────────────
+// changeSelfName moved to settings block
+function saveCart(){localStorage.setItem("baCart",JSON.stringify(cart));updateBadge();}
+function updateBadge(){const b=document.getElementById("cartBadgeAv"),mc=document.getElementById("menuCC");if(cart.length>0){b.classList.add("show");b.textContent=cart.length;mc.style.display="inline";mc.textContent=cart.length;}else{b.classList.remove("show");mc.style.display="none";}}
+function addToCart(p){cart.push(p);saveCart();toast("🛒 Añadido al carrito","ok");}
+function removeFromCart(i){cart.splice(i,1);saveCart();renderCart();}
+function clearCart(){cart=[];saveCart();renderCart();}
+function renderCart(){
+  const box=document.getElementById("cartItems"),tot=document.getElementById("cartTotalBox");
+  const banner=document.getElementById("cartBanner");
+  if(!cart.length){
+    box.innerHTML=`<div class="empty-state" style="padding:50px 0">
+      <div style="font-size:3rem;margin-bottom:12px">🛒</div>
+      <div style="font-weight:800;margin-bottom:4px">Tu carrito está vacío</div>
+      <div style="font-size:.8rem;color:var(--muted)">Agrega productos desde la tienda</div>
+      <button class="btn btn-green" style="margin-top:16px;width:auto;padding:10px 24px" onclick="menuGo('shop')">🛍️ Ir a la tienda</button>
+    </div>`;
+    tot.style.display="none";banner.style.display="none";return;
+  }
+  // Agrupar por categoría si tienen cat
+  const groups={};
+  cart.forEach((p,i)=>{const g=p.cat||"🛍️ Artículos";if(!groups[g])groups[g]=[];groups[g].push({...p,_i:i});});
+  let sum=0;
+  let html="";
+  for(const [grp,items] of Object.entries(groups)){
+    html+=`<div style="margin-bottom:14px">
+      <div style="font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px;padding:6px 10px;background:var(--card2);border-radius:9px;display:inline-flex;align-items:center;gap:5px">${grp}</div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden">`;
+    items.forEach((p,idx)=>{
+      sum+=Number(p.price);
+      html+=`<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;${idx<items.length-1?"border-bottom:1px solid var(--border);":""}">
+        <div style="width:44px;height:44px;border-radius:12px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">${p.img?`<img src="${p.img}" style="width:100%;height:100%;object-fit:cover;border-radius:12px" onerror="this.parentElement.textContent='📦'">`:"📦"}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.88rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div>
+          <div style="font-size:.8rem;color:var(--green);font-weight:800;margin-top:2px">${fmt(p.price)}</div>
+        </div>
+        <button onclick="removeFromCart(${p._i})" style="width:32px;height:32px;border-radius:50%;background:rgba(255,82,82,.15);border:1px solid rgba(255,82,82,.3);color:#ff5252;font-size:.85rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center">✕</button>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  }
+  box.innerHTML=html;
+  const disc=getDiscount();
+  const couponD=activeCoupon?(activeCoupon.pct/100):0;
+  const totalDisc=Math.min(disc+couponD,0.50);
+  const discAmt=Math.round(sum*totalDisc);
+  const finalTotal=sum-discAmt;
+  document.getElementById("cartTotalVal").textContent=fmt(finalTotal)+(totalDisc>0?" ("+((totalDisc*100).toFixed(0))+"% desc)":"");
+  document.getElementById("cartBannerTotal").textContent=fmt(sum);
+  document.getElementById("cartBannerItems").textContent=cart.length+" artículo"+(cart.length!==1?"s":"");
+  document.getElementById("cartSaldoDisp").textContent=fmt(UD.saldo||0);
+  tot.style.display="block";banner.style.display="block";
+}
+async function buy(){
+  if(!CU)return toast("Inicia sesión primero","err");
+  if(!cart.length)return toast("Tu carrito está vacío","err");
+  const rawTotal=cart.reduce((s,p)=>s+Number(p.price),0);
+  const autoDisc=getDiscount();
+  const couponDisc=activeCoupon?(activeCoupon.pct/100):0;
+  const disc=Math.min(autoDisc+couponDisc,0.50);
+  const total=Math.round(rawTotal*(1-disc));
+  const saldo=UD.saldo||0;
+  if(saldo<total){
+    document.getElementById("nosaldoOverlay").classList.add("open");
+    return;
+  }
+  try{
+    const ns=saldo-total;
+    await updateDoc(doc(db,"users",CU.uid),{saldo:ns,purchases:(UD.purchases||0)+cart.length});
+    const orderDoc=await addDoc(collection(db,"orders"),{uid:CU.uid,email:CU.email,name:UD.name||"Usuario",items:cart,total,discount:disc,date:new Date().toISOString()});
+    const lastOrderId=orderDoc.id;
+    const links=[];
+    for(const item of cart){
+      if(item.id){
+        const pd=await getDoc(doc(db,"products",item.id));
+        if(pd.exists()){
+          const d=pd.data();
+          if(d.link1)links.push({name:item.name,label:"Descarga 1",url:d.link1,key:d.productKey||""});
+          if(d.link2)links.push({name:item.name,label:"Descarga 2",url:d.link2,key:""});
+          if(d.link3)links.push({name:item.name,label:"Descarga 3",url:d.link3,key:""});
+          // Si el producto es de stock único (tiene key o link), se borra automáticamente
+          if(d.productKey||d.link1){
+            await deleteDoc(doc(db,"products",item.id));
+          }
+        }
+      }
+    }
+    // Notificación al usuario
+    const orderRef=await addDoc(collection(db,"notifications"),{
+      uid:CU.uid,type:"compra",title:"🧾 Compra completada",message:`✅ ${cart.map(p=>p.name).join(", ")}`,
+      date:new Date().toISOString(),read:false,orderId:lastOrderId,discount:disc
+    });
+    // Marcar cupón como usado
+    if(activeCoupon){
+      try{await updateDoc(doc(db,"coupons",activeCoupon.id),{usedBy:[...((await getDoc(doc(db,"coupons",activeCoupon.id))).data().usedBy||[]),CU.uid]});}catch(e){}
+      activeCoupon=null;
+    }
+    UD.saldo=ns;cart=[];saveCart();renderCart();updateHdrSaldo();
+    if(links.length){showDL(links);}else{toast(`✅ Compra realizada. Saldo: ${fmt(ns)}`+(disc>0?" (Descuento aplicado 🎉)":""),"ok");menuGo("home");}
+  }catch(e){toast("Error al procesar la compra","err");}
+}
+function showDL(links){
+  // Auto-copy all keys and links to clipboard
+  const allKeys=links.filter(l=>l.key).map(l=>`🔑 ${l.name}: ${l.key}`).join("\n");
+  const allLinks=links.map(l=>`${l.name} (${l.label}): ${l.url}`).join("\n");
+  const clipText=(allKeys?allKeys+"\n\n":"")+allLinks;
+  try{navigator.clipboard.writeText(clipText).catch(()=>{});}catch(e){}
+  document.getElementById("dlLinks").innerHTML=links.map(l=>`
+    <div class="dl-card">
+      <div style="font-size:1.5rem;margin-bottom:6px">📥</div>
+      <div style="font-size:.95rem;font-weight:800;margin-bottom:4px">${l.name}</div>
+      ${l.label?`<div style="font-size:.72rem;color:var(--muted);margin-bottom:6px">${l.label}</div>`:""}
+      ${l.desc?`<div style="font-size:.75rem;color:var(--muted);margin-bottom:8px;line-height:1.4">${l.desc}</div>`:""}
+      ${l.key?`<div style="background:rgba(255,215,64,.1);border:1px solid rgba(255,215,64,.3);border-radius:10px;padding:10px;margin-bottom:10px">
+        <div style="font-size:.65rem;color:var(--gold);font-weight:700;margin-bottom:3px">🔑 TU KEY</div>
+        <div style="font-size:.95rem;font-weight:900;color:var(--gold);letter-spacing:1px;word-break:break-all">${l.key}</div>
+        <button onclick="copyText('${l.key}')" style="font-size:.65rem;font-weight:700;background:rgba(255,215,64,.2);border:1px solid rgba(255,215,64,.3);color:var(--gold);padding:3px 10px;border-radius:6px;cursor:pointer;margin-top:6px">📋 Copiar key</button>
+      </div>`:""}
+      <a class="dl-link" href="${l.url}" target="_blank" onclick="copyText('${l.url}')">⬇️ Descargar / Abrir link</a>
+      <button onclick="copyText('${l.url}')" style="font-size:.68rem;font-weight:700;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:8px;cursor:pointer;margin-top:6px;width:100%">📋 Copiar link</button>
+    </div>`).join("");
+  // Show auto-copy notice
+  setTimeout(()=>toast("📋 Keys y links copiados automáticamente","ok"),400);
+  show("downloadPage");
+}
+function copyText(t){try{navigator.clipboard.writeText(t).then(()=>toast("📋 Copiado","ok"));}catch(e){}}
+
+// ─── SEGUIDORES ───────────────────────────────────────────
+function pickSeg(el,pl,qty,price){
+  document.querySelectorAll(`#opts-${pl} .seg-opt`).forEach(o=>o.classList.remove("sel"));el.classList.add("sel");
+  pendSeg={platform:pl,qty,price};openSegModal(pl,qty,price);
+}
+function openSegModal(pl,qty,price){
+  if(pl)pendSeg={platform:pl,qty,price};
+  document.getElementById("smPlat").textContent=SNAMES[pendSeg.platform]||pendSeg.platform;
+  document.getElementById("smQty").textContent=pendSeg.qty.toLocaleString();
+  document.getElementById("smPrice").textContent=fmt(pendSeg.price);
+  document.getElementById("segUser").value="";document.getElementById("segLink2").value="";
+  document.getElementById("segModal").classList.add("open");
+}
+function calcSeg(){
+  const pl=document.getElementById("segPlatCustom").value;
+  const qty=Number(document.getElementById("segCant").value);
+  if(!qty||qty<1)return toast("Ingresa una cantidad válida","err");
+  // Precio escalonado: más seguidores = mejor precio por unidad (máximo x2.5 del base)
+  const base=SRATES[pl];
+  let multiplier=1;
+  if(qty<=200)multiplier=1;
+  else if(qty<=500)multiplier=0.95;
+  else if(qty<=1000)multiplier=0.88;
+  else if(qty<=2000)multiplier=0.80;
+  else if(qty<=5000)multiplier=0.72;
+  else multiplier=0.65;
+  const price=Math.ceil((qty/100)*base*multiplier);
+  pendSeg={platform:pl,qty,price};
+  const res=document.getElementById("segRes");
+  document.getElementById("segResPrice").textContent=fmt(price);
+  document.getElementById("segResDesc").textContent=`${qty.toLocaleString()} seguidores de ${SNAMES[pl]} · precio por 100: ${fmt(Math.ceil(base*multiplier))}`;
+  res.style.display="block";
+}
+async function confirmSeg(){
+  const user=document.getElementById("segUser").value.trim();
+  if(!user)return toast("Ingresa tu nombre de usuario","err");
+  if(!CU)return toast("Inicia sesión primero","err");
+  const saldo=UD.saldo||0;
+  if(saldo<pendSeg.price)return toast(`Saldo insuficiente. Necesitas ${fmt(pendSeg.price)}`,"err");
+  try{
+    const ns=saldo-pendSeg.price;
+    await updateDoc(doc(db,"users",CU.uid),{saldo:ns,purchases:(UD.purchases||0)+1});
+    await addDoc(collection(db,"orders"),{uid:CU.uid,email:CU.email,type:"seguidores",platform:pendSeg.platform,qty:pendSeg.qty,price:pendSeg.price,targetUser:user,targetLink:document.getElementById("segLink2").value.trim(),date:new Date().toISOString(),status:"pending"});
+    UD.saldo=ns;updateHdrSaldo();closeModal("segModal");showWait(user);
+  }catch(e){toast("Error al procesar","err");}
+}
+function showWait(user){
+  document.getElementById("waitTitle").textContent="¡Pedido recibido! ⚡";
+  document.getElementById("waitDesc").textContent=`Tus seguidores de ${SNAMES[pendSeg.platform]} llegarán en 1-2 horas`;
+  document.getElementById("waitEmoji").textContent="⏳";
+  document.getElementById("waitSum").innerHTML=`<div class="info-row"><span class="info-key">Plataforma</span><span class="info-val">${SNAMES[pendSeg.platform]}</span></div><div class="info-row"><span class="info-key">Cantidad</span><span class="info-val">${pendSeg.qty.toLocaleString()}</span></div><div class="info-row"><span class="info-key">Usuario</span><span class="info-val">${user}</span></div><div class="info-row"><span class="info-key">Pagado</span><span class="info-val" style="color:var(--green)">${fmt(pendSeg.price)}</span></div>`;
+  let s=7200;document.getElementById("waitTimer").textContent="2:00:00";
+  clearInterval(window._wi);window._wi=setInterval(()=>{s--;if(s<=0){clearInterval(window._wi);document.getElementById("waitTimer").textContent="¡Listo!";document.getElementById("waitEmoji").textContent="✅";return;}const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;document.getElementById("waitTimer").textContent=`${h}:${String(m).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;},1000);
+  show("waitPage");
+}
+
+// ─── MÉTODOS DE PAGO ──────────────────────────────────────
+async function loadPayMethods(){
+  const box=document.getElementById("payMethods");
+  try{
+    const sn=await getDocs(collection(db,"payMethods"));
+    if(sn.empty){box.innerHTML='<div class="empty-state"><div class="es-icon">💳</div>No hay métodos de pago configurados aún.<br><span style="font-size:.78rem">El administrador los agregará pronto.</span></div>';return;}
+    box.innerHTML="";
+    sn.forEach(d=>{
+      const m=d.data();
+      const card=document.createElement("div");card.className="pay-card";
+      card.innerHTML=`<div class="pay-card-title">💳 ${m.title}</div><div class="pay-info">${m.desc.replace(/\n/g,"<br>")}</div>`;
+      box.appendChild(card);
+    });
+  }catch(e){box.innerHTML='<div class="empty-state">Error al cargar</div>';}
+}
+async function addPayMethod(){
+  const title=document.getElementById("pmTitle").value.trim();
+  const desc=document.getElementById("pmDesc").value.trim();
+  if(!title||!desc)return toast("Completa título e instrucciones","err");
+  try{
+    await addDoc(collection(db,"payMethods"),{title,desc,createdAt:new Date().toISOString()});
+    document.getElementById("pmTitle").value="";document.getElementById("pmDesc").value="";
+    toast("✅ Método de pago agregado","ok");
+    loadAdminPayList();
+  }catch(e){toast("Error al agregar","err");}
+}
+async function loadAdminPayList(){
+  const box=document.getElementById("adminPayList");
+  try{
+    const sn=await getDocs(collection(db,"payMethods"));
+    if(sn.empty){box.innerHTML='<div style="font-size:.78rem;color:var(--muted)">Sin métodos agregados</div>';return;}
+    box.innerHTML="";
+    sn.forEach(d=>{
+      const m=d.data();const r=document.createElement("div");r.className="key-row";
+      r.innerHTML=`<div><div class="key-code" style="color:#82b1ff">💳 ${m.title}</div></div><button class="bsm bsm-red" onclick="deletePayMethod('${d.id}')">🗑️</button>`;
+      box.appendChild(r);
+    });
+  }catch(e){}
+}
+async function deletePayMethod(id){if(!confirm("¿Eliminar este método de pago?"))return;try{await deleteDoc(doc(db,"payMethods",id));toast("🗑️ Eliminado","info");loadAdminPayList();}catch(e){toast("Error","err");}}
+
+// ─── ADMIN ────────────────────────────────────────────────
+async function loadAdmin(){
+  if(!CU||CU.email!==ADMIN){toast("Acceso denegado","err");show("home");return;}
+  loadAdminUsers();loadAdminKeys();loadAdminProds();loadAdminPayList();loadPendingSegOrders();loadAdminTopComp();loadAllOrders();
+  try{const sn=await getDocs(collection(db,"orders"));document.getElementById("statOrds").textContent=sn.size;}catch(e){}
+}
+async function loadAdminUsers(){
+  const box=document.getElementById("adminUsers");
+  try{
+    const sn=await getDocs(collection(db,"users"));document.getElementById("statUsers").textContent=sn.size;
+    if(sn.empty){box.innerHTML='<div class="empty-state">Sin usuarios</div>';return;}
+    box.innerHTML="";
+    sn.forEach(d=>{
+      const u=d.data();const row=document.createElement("div");
+      row.className="user-row"+(u.disabled?" user-dis":"");
+      const sn2=(u.name||"").replace(/'/g,"\\'");
+      row.innerHTML=`<div class="user-av">${(u.name||"?")[0].toUpperCase()}</div>
+        <div class="user-inf">
+          <div class="user-name">${u.name||"Sin nombre"} ${u.username?`<span style="color:var(--muted);font-size:.73rem">@${u.username}</span>`:""} ${u.tiktok?`<span style="color:#ee1d52;font-size:.65rem">🎵${u.tiktok}</span>`:""} ${u.disabled?`<span style="color:#ff5252;font-size:.63rem">● Deshabilitado</span>`:""}</div>
+          <div class="user-meta">${u.email||""} · <span style="color:var(--green)">$${u.saldo||0} MXN</span> · ${u.purchases||0} compras</div>
+          ${u.phone?`<div class="user-phone">📱 ${u.phone}</div>`:""}
+          <div class="user-acts">
+            <button class="bsm bsm-grn" onclick="openRecharge('${d.id}','${sn2}',${u.saldo||0})">💰 Saldo</button>
+            <button class="bsm bsm-blu" onclick="openEditName('${d.id}','${sn2}')">✏️ Nombre</button>
+            <button class="bsm bsm-red" onclick="openResetPass('${d.id}','${u.email||""}','${sn2}')">🔑 Pass</button>
+            <button class="bsm bsm-org" onclick="toggleDis('${d.id}',${!!u.disabled})">${u.disabled?"✅ Habilitar":"🚫 Deshabilitar"}</button>
+            <button class="bsm bsm-red" onclick="delUser('${d.id}','${sn2}')">🗑️ Eliminar</button>
+          </div>
+        </div>`;
+      box.appendChild(row);
+    });
+  }catch(e){box.innerHTML='<div class="empty-state">Error al cargar</div>';}
+}
+async function toggleDis(uid,cur){if(!confirm(cur?"¿Habilitar esta cuenta?":"¿Deshabilitar esta cuenta?"))return;try{await updateDoc(doc(db,"users",uid),{disabled:!cur});toast(cur?"✅ Habilitada":"🚫 Deshabilitada","info");loadAdminUsers();}catch(e){toast("Error","err");}}
+async function delUser(uid,name){if(!confirm(`¿Eliminar PERMANENTEMENTE la cuenta de ${name}?`))return;try{await deleteDoc(doc(db,"users",uid));toast("🗑️ Eliminado","info");loadAdminUsers();}catch(e){toast("Error","err");}}
+
+async function loadAdminKeys(){
+  const box=document.getElementById("adminKeys");
+  try{const sn=await getDocs(collection(db,"keys"));document.getElementById("statKeys").textContent=sn.size;if(sn.empty){box.innerHTML='<div class="empty-state">Sin keys</div>';return;}box.innerHTML="";sn.forEach(d=>{const k=d.data();const r=document.createElement("div");r.className="key-row";r.innerHTML=`<div><div class="key-code">🔑 ${d.id}</div><div class="key-meta">Usos: ${k.uses}</div></div><button class="bsm bsm-red" onclick="deleteKey('${d.id}')">🗑️</button>`;box.appendChild(r);});}catch(e){box.innerHTML='<div class="empty-state">Error</div>';}
+}
+
+async function loadAdminProds(){
+  const box=document.getElementById("adminProds");
+  try{
+    const sn=await getDocs(collection(db,"products"));document.getElementById("statProds").textContent=sn.size;
+    if(sn.empty){box.innerHTML='<div class="empty-state">Sin productos</div>';return;}
+    box.innerHTML="";
+    sn.forEach(d=>{
+      const p=d.data();const r=document.createElement("div");r.className="key-row";
+      r.innerHTML=`<div><div class="key-code" style="color:var(--green)">📦 ${p.name}</div><div class="key-meta">${fmt(p.price)} MXN ${p.cat?`· ${p.cat}`:""} ${p.masVendido?"🔥":""} ${p.dripCaliente?"🔥 DC":""} ${p.destacado?"⭐":""}</div></div><button class="bsm bsm-red" onclick="deleteProduct('${d.id}')">🗑️</button>`;
+      box.appendChild(r);
+    });
+  }catch(e){box.innerHTML='<div class="empty-state">Error</div>';}
+}
+
+async function addProduct(){
+  const nm=document.getElementById("pName").value.trim(),pr=document.getElementById("pPrice").value,img=document.getElementById("pImg").value.trim(),desc=document.getElementById("pDesc").value.trim(),pk=document.getElementById("pKey").value.trim(),l1=document.getElementById("pLink1").value.trim(),l2=document.getElementById("pLink2").value.trim(),l3=document.getElementById("pLink3").value.trim(),mv=document.getElementById("pMV").checked,dc=document.getElementById("pDC").checked,dest=document.getElementById("pDest").checked,cat=document.getElementById("pCat").value;
+  if(!nm||!pr)return toast("Nombre y precio son obligatorios","err");
+  try{
+    await addDoc(collection(db,"products"),{name:nm,price:Number(pr),img,desc,productKey:pk,link1:l1,link2:l2,link3:l3,masVendido:mv,dripCaliente:dc,destacado:dest,cat,createdAt:new Date().toISOString()});
+    ["pName","pPrice","pImg","pDesc","pKey","pLink1","pLink2","pLink3"].forEach(id=>document.getElementById(id).value="");
+    document.getElementById("pMV").checked=false;document.getElementById("pDC").checked=false;document.getElementById("pDest").checked=false;document.getElementById("pCat").value="";
+    toast("✅ Producto agregado","ok");loadAdminProds();
+  }catch(e){toast("Error al agregar","err");}
+}
+async function deleteProduct(id){if(!confirm("¿Eliminar este producto?"))return;try{await deleteDoc(doc(db,"products",id));toast("🗑️ Eliminado","info");loadAdminProds();}catch(e){toast("Error","err");}}
+
+async function createKey(){
+  const c=document.getElementById("kCode").value.trim().toUpperCase(),
+        u=document.getElementById("kUses").value,
+        l1=document.getElementById("kLink1").value.trim(),
+        l2=document.getElementById("kLink2").value.trim(),
+        pk=document.getElementById("kProdKey").value.trim();
+  if(!c||!u)return toast("Completa código y usos","err");
+  try{
+    await setDoc(doc(db,"keys",c),{uses:Number(u),link1:l1,link2:l2,productKey:pk,createdAt:new Date().toISOString()});
+    ["kCode","kUses","kLink1","kLink2","kProdKey"].forEach(id=>document.getElementById(id).value="");
+    toast("✅ Key creada: "+c,"ok");loadAdminKeys();
+  }catch(e){toast("Error","err");}
+}
+async function deleteKey(id){if(!confirm("¿Eliminar esta key?"))return;try{await deleteDoc(doc(db,"keys",id));toast("🗑️ Key eliminada","info");loadAdminKeys();}catch(e){toast("Error","err");}}
+
+function openRecharge(uid,name,currentSaldo){document.getElementById("rechargeUID").value=uid;document.getElementById("rechargeUserName").textContent="👤 "+name;document.getElementById("rechargeCurrentSaldo").textContent="Saldo actual: $"+(currentSaldo||0)+" MXN";document.getElementById("rechargeAmt").value="";document.getElementById("rechargeModal").classList.add("open");}
+async function doRecharge(sign){
+  const uid=document.getElementById("rechargeUID").value;
+  let amt=Number(document.getElementById("rechargeAmt").value);
+  if(!amt||isNaN(amt)||amt===0)return toast("Ingresa una cantidad válida","err");
+  amt=Math.abs(amt)*sign; // sign=1 agregar, sign=-1 quitar
+  try{
+    const rf=doc(db,"users",uid);const sn=await getDoc(rf);
+    if(!sn.exists())return toast("Usuario no encontrado","err");
+    const cur=sn.data().saldo||0;
+    const nuevo=cur+amt;
+    if(nuevo<0)return toast(`No se puede quitar más de lo que tiene ($${cur} MXN disponibles)`,"err");
+    await updateDoc(rf,{saldo:nuevo});
+    closeModal("rechargeModal");
+    toast(sign>0?`✅ +$${Math.abs(amt)} MXN agregados. Nuevo saldo: $${nuevo}`:`✅ -$${Math.abs(amt)} MXN quitados. Nuevo saldo: $${nuevo}`,"ok");
+    loadAdminUsers();
+  }catch(e){toast("Error","err");}
+}
+function openEditName(uid,cur){document.getElementById("editNameUID").value=uid;document.getElementById("editNameCurrent").textContent="👤 Nombre actual: "+cur;document.getElementById("editNameVal").value=cur;document.getElementById("editNameModal").classList.add("open");}
+async function doEditName(){const uid=document.getElementById("editNameUID").value,n=document.getElementById("editNameVal").value.trim();if(!n)return toast("Escribe un nombre","err");try{await updateDoc(doc(db,"users",uid),{name:n});closeModal("editNameModal");toast("✅ Nombre actualizado","ok");loadAdminUsers();}catch(e){toast("Error","err");}}
+function openResetPass(uid,email,name){document.getElementById("resetPassUID").value=uid;document.getElementById("resetPassEmail").value=email;document.getElementById("resetPassUser").textContent="👤 "+name+" · "+email;document.getElementById("resetPassVal").value="";document.getElementById("resetPassModal").classList.add("open");}
+async function doResetPass(){const uid=document.getElementById("resetPassUID").value,p=document.getElementById("resetPassVal").value;if(!p||p.length<6)return toast("Mínimo 6 caracteres","err");try{await updateDoc(doc(db,"users",uid),{pendingPass:p});closeModal("resetPassModal");toast("✅ Contraseña actualizada. Se aplicará al próximo inicio de sesión.","ok");loadAdminUsers();}catch(e){toast("Error","err");}}
+
+// ─── PENDIENTES SEGUIDORES (ADMIN) ───────────────────────
+async function loadPendingSegOrders(){
+  const box=document.getElementById("adminPendingOrders");
+  const dot=document.getElementById("pendingDot");
+  try{
+    const sn=await getDocs(collection(db,"orders"));
+    const pending=[];
+    sn.forEach(d=>{const o=d.data();if(o.type==="seguidores"&&o.status==="pending")pending.push({id:d.id,...o});});
+    pending.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    if(!pending.length){
+      dot.style.display="none";
+      box.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);font-size:.85rem">✅ Sin pedidos pendientes</div>';
+      return;
+    }
+    dot.style.display="inline-block";
+    box.innerHTML=pending.map(o=>{
+      const d=new Date(o.date);
+      const dateStr=d.toLocaleDateString("es-MX",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+      const plat={tiktok:"🎵 TikTok",igseg:"📸 IG Seguidores",fb:"📘 Facebook"}[o.platform]||o.platform;
+      return `<div class="order-seg-card">
+        <div class="order-seg-header">
+          <div>
+            <div style="font-size:.82rem;font-weight:800">${plat}</div>
+            <div style="font-size:.68rem;color:var(--muted)">${dateStr}</div>
+          </div>
+          <span class="order-seg-badge badge-pending">Pendiente</span>
+        </div>
+        <div class="info-row" style="padding:5px 0"><span class="info-key">👤 Usuario</span><span class="info-val" style="color:var(--green)">${o.targetUser||"—"}</span></div>
+        <div class="info-row" style="padding:5px 0"><span class="info-key">🔗 Link</span><span class="info-val" style="font-size:.72rem;color:#82b1ff">${o.targetLink||"—"}</span></div>
+        <div class="info-row" style="padding:5px 0"><span class="info-key">👥 Cantidad</span><span class="info-val">${(o.qty||0).toLocaleString()}</span></div>
+        <div class="info-row" style="padding:5px 0"><span class="info-key">💰 Pagado</span><span class="info-val" style="color:var(--green)">$${o.price||0} MXN</span></div>
+        <div class="info-row" style="padding:5px 0"><span class="info-key">📧 Email</span><span class="info-val" style="font-size:.72rem">${o.email||"—"}</span></div>
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+          <button class="bsm bsm-grn" onclick="markSegDone('${o.id}')">✅ Marcar como Enviado</button>
+          ${o.targetLink?`<a href="${o.targetLink}" target="_blank" class="bsm bsm-blu">🔗 Ver perfil</a>`:""}
+        </div>
+      </div>`;
+    }).join("");
+  }catch(e){box.innerHTML='<div style="color:var(--muted);font-size:.8rem;padding:10px">Error al cargar</div>';}
+}
+
+async function markSegDone(orderId){
+  if(!confirm("¿Marcar este pedido como enviado/completado?"))return;
+  try{
+    await updateDoc(doc(db,"orders",orderId),{status:"done",completedAt:new Date().toISOString()});
+    toast("✅ Pedido marcado como completado","ok");
+    loadPendingSegOrders();
+  }catch(e){toast("Error al actualizar","err");}
+}
+
+// ─── AJUSTES DE PERFIL ────────────────────────────────────
+function toggleSetting(id){
+  document.querySelectorAll(".setting-panel").forEach(p=>{if(p.id!==id)p.classList.remove("open");});
+  document.getElementById(id).classList.toggle("open");
+}
+async function changeSelfName(){
+  const n=document.getElementById("newNameSelf").value.trim();
+  if(!n)return toast("Escribe un nombre","err");
+  try{await updateDoc(doc(db,"users",CU.uid),{name:n});document.getElementById("newNameSelf").value="";toast("✅ Nombre actualizado","ok");document.getElementById("settingName").classList.remove("open");}
+  catch(e){toast("Error al actualizar","err");}
+}
+async function changeSelfPhone(){
+  const ph=document.getElementById("newPhoneSelf").value.trim();
+  if(!ph)return toast("Escribe un número","err");
+  try{await updateDoc(doc(db,"users",CU.uid),{phone:ph});document.getElementById("newPhoneSelf").value="";toast("✅ Teléfono actualizado","ok");document.getElementById("settingPhone").classList.remove("open");}
+  catch(e){toast("Error","err");}
+}
+async function changeSelfUsername(){
+  const un=document.getElementById("newUserSelf").value.trim().toLowerCase().replace(/\s+/g,"");
+  if(!un)return toast("Escribe un usuario","err");
+  try{
+    const q=query(collection(db,"users"),where("username","==",un),limit(1));
+    const sn=await getDocs(q);
+    if(!sn.empty&&sn.docs[0].id!==CU.uid)return toast("Ese usuario ya está en uso","err");
+    await updateDoc(doc(db,"users",CU.uid),{username:un});
+    document.getElementById("newUserSelf").value="";
+    toast("✅ Usuario actualizado","ok");
+    document.getElementById("settingUser").classList.remove("open");
+  }catch(e){toast("Error","err");}
+}
+async function changeSelfPass(){
+  const p=document.getElementById("newPassSelf").value;
+  const p2=document.getElementById("newPassSelf2").value;
+  if(!p||p.length<6)return toast("Mínimo 6 caracteres","err");
+  if(p!==p2)return toast("Las contraseñas no coinciden","err");
+  try{
+    await updatePassword(CU,p);
+    document.getElementById("newPassSelf").value="";document.getElementById("newPassSelf2").value="";
+    toast("✅ Contraseña actualizada","ok");
+    document.getElementById("settingPass").classList.remove("open");
+  }catch(e){
+    if(e.code==="auth/requires-recent-login")return toast("Necesitas cerrar sesión y volver a entrar primero","err");
+    toast("Error al cambiar contraseña","err");
+  }
+}
+
+// ─── VERIFICACIÓN DE CORREO CON EmailJS ───────────────────
+async function sendVerifyCode(){
+  if(!CU)return toast("Inicia sesión primero","err");
+  if(UD.emailVerified){toast("✅ Tu correo ya está verificado","ok");return;}
+  const email=CU.email||UD.email;
+  if(!email)return toast("No se encontró tu correo","err");
+
+  const code=Math.floor(100000+Math.random()*900000).toString();
+  const expiry=Date.now()+10*60*1000; // 10 min
+
+  try{
+    // Guardar código en Firestore
+    await updateDoc(doc(db,"users",CU.uid),{verifyCode:code,verifyExpiry:expiry});
+
+    // Enviar email real via EmailJS
+    const emailSent=await sendEmailViaEmailJS(email,code,UD.name||"Usuario");
+
+    if(emailSent){
+      document.getElementById("verifyInputBox").style.display="block";
+      document.getElementById("sendVerifyBtn").textContent="📨 Código enviado — Revisa tu Gmail";
+      document.getElementById("sendVerifyBtn").disabled=true;
+      toast("📧 ¡Código enviado a "+email+"! Revisa tu bandeja","ok");
+      // Habilitar reenvío en 60s
+      setTimeout(()=>{
+        const btn=document.getElementById("sendVerifyBtn");
+        if(btn){btn.textContent="📨 Enviar código a mi correo";btn.disabled=false;}
+      },60000);
+    } else {
+      // Fallback: mostrar código en pantalla si EmailJS no está configurado
+      document.getElementById("verifyInputBox").style.display="block";
+      document.getElementById("sendVerifyBtn").textContent="⚠️ (modo prueba)";
+      toast("⚠️ EmailJS no configurado. Código de prueba: "+code,"info");
+    }
+  }catch(e){toast("Error al enviar código","err");}
+}
+
+async function sendEmailViaEmailJS(toEmail,code,name){
+  try{
+    // Cargar EmailJS dinámicamente si no está cargado
+    if(!window.emailjs){
+      await new Promise((res,rej)=>{
+        const s=document.createElement("script");
+        s.src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
+        s.onload=res;s.onerror=rej;document.head.appendChild(s);
+      });
+      window.emailjs.init(EMAILJS_PUBLIC);
+    }
+    await window.emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
+      to_email:toEmail,
+      to_name:name,
+      verify_code:code,
+      app_name:"Baby Ale"
+    });
+    return true;
+  }catch(e){
+    console.warn("EmailJS error:",e);
+    return false;
+  }
+}
+
+async function confirmVerifyCode(){
+  const input=document.getElementById("verifyCodeInput").value.trim();
+  if(!input||input.length!==6)return toast("Ingresa el código de 6 dígitos","err");
+  try{
+    const sn=await getDoc(doc(db,"users",CU.uid));
+    const d=sn.data();
+    if(!d.verifyCode)return toast("Genera un código primero","err");
+    if(Date.now()>d.verifyExpiry)return toast("❌ El código expiró. Genera uno nuevo","err");
+    if(input!==d.verifyCode)return toast("❌ Código incorrecto","err");
+    await updateDoc(doc(db,"users",CU.uid),{emailVerified:true,verifyCode:null,verifyExpiry:null});
+    document.getElementById("verifyInputBox").style.display="none";
+    document.getElementById("verifyAlreadyDone").style.display="block";
+    document.getElementById("verifyFlow").style.display="none";
+    document.getElementById("verifiedBadge").style.display="inline";
+    document.getElementById("verifyIco").textContent="✅";
+    document.getElementById("settingVerify").classList.remove("open");
+    toast("✅ ¡Correo verificado exitosamente!","ok");
+  }catch(e){toast("Error al verificar","err");}
+}
+
+// ─── BROADCAST ADMIN ─────────────────────────────────────
+async function sendBroadcast(){
+  const title=document.getElementById("broadTitle").value.trim();
+  const msg=document.getElementById("broadMsg").value.trim();
+  if(!title||!msg)return toast("Completa título y mensaje","err");
+  if(!confirm(`¿Enviar anuncio "${title}" a TODOS los usuarios?`))return;
+  try{
+    const sn=await getDocs(collection(db,"users"));
+    const batch=[];
+    sn.forEach(d=>{
+      batch.push(addDoc(collection(db,"notifications"),{
+        uid:d.id,type:"anuncio",title,message:"📢 "+title+": "+msg,
+        date:new Date().toISOString(),read:false,broadcast:true
+      }));
+    });
+    await Promise.all(batch);
+    document.getElementById("broadTitle").value="";document.getElementById("broadMsg").value="";
+    toast(`✅ Anuncio enviado a ${sn.size} usuarios`,"ok");
+  }catch(e){toast("Error al enviar anuncio","err");}
+}
+async function resetTopCompradores(){
+  if(!confirm("¿Resetear el ranking de compradores? Todos quedarán en 0."))return;
+  try{
+    const sn=await getDocs(collection(db,"users"));
+    const batch=[];
+    sn.forEach(d=>batch.push(updateDoc(doc(db,"users",d.id),{purchases:0})));
+    await Promise.all(batch);
+    await setDoc(doc(db,"config","topReset"),{resetAt:new Date().toISOString()});
+    toast("✅ Ranking reseteado","ok");
+    renderTopCompradores();
+    loadAdminTopComp();
+  }catch(e){toast("Error al resetear","err");}
+}
+
+async function removeFromTop(uid,name){
+  if(!confirm(`¿Quitar a ${name} del top de compradores?`))return;
+  try{
+    await updateDoc(doc(db,"users",uid),{purchases:0});
+    toast("✅ "+name+" quitado del top","ok");
+    renderTopCompradores();
+    loadAdminTopComp();
+  }catch(e){toast("Error","err");}
+}
+
+async function loadAdminTopComp(){
+  const box=document.getElementById("adminTopComp");
+  try{
+    const sn=await getDocs(collection(db,"users"));
+    const buyers=[];
+    sn.forEach(d=>{const u=d.data();if((u.purchases||0)>=10)buyers.push({id:d.id,name:u.name||"Sin nombre",count:u.purchases||0});});
+    buyers.sort((a,b)=>b.count-a.count);
+    if(!buyers.length){box.innerHTML='<div style="font-size:.78rem;color:var(--muted)">Sin compradores en el ranking</div>';return;}
+    const medals=["🥇","🥈","🥉","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟"];
+    box.innerHTML=buyers.map((b,i)=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:.9rem;width:20px">${medals[i]||"·"}</span>
+        <div style="flex:1"><div style="font-size:.85rem;font-weight:700">${b.name}</div><div style="font-size:.68rem;color:var(--muted)">${b.count} compra${b.count!==1?"s":""}</div></div>
+        <button class="bsm bsm-red" onclick="removeFromTop('${b.id}','${b.name.replace(/'/g,"\\'")}')">✕ Quitar</button>
+      </div>`).join("");
+  }catch(e){box.innerHTML='<div style="font-size:.78rem;color:var(--muted)">Error al cargar</div>';}
+}
+
+// ─── NOTIFICACIONES ────────────────────────────────────────
+async function checkUserNotifications(){
+  if(!CU)return;
+  try{
+    const sn=await getDocs(query(collection(db,"notifications"),where("uid","==",CU.uid),where("read","==",false)));
+    // También revisar orders de seguidores done
+    const snO=await getDocs(query(collection(db,"orders"),where("uid","==",CU.uid),where("type","==","seguidores"),where("status","==","done")));
+    let unread=sn.size;
+    snO.forEach(d=>{if(!d.data().userRead)unread++;});
+    const notifBtn=document.getElementById("notifBtn");
+    const notifBadge=document.getElementById("notifBadge");
+    const menuCount=document.getElementById("menuNotifCount");
+    if(unread>0){
+      notifBtn.style.display="flex";
+      notifBadge.style.display="flex";notifBadge.textContent=unread;
+      menuCount.style.display="inline";menuCount.textContent=unread;
+    } else {
+      notifBadge.style.display="none";
+      menuCount.style.display="none";
+      if(sn.size>0)notifBtn.style.display="flex";
+    }
+  }catch(e){}
+}
+
+async function renderNotifList(){
+  if(!CU)return;
+  const list=document.getElementById("notifList");
+  try{
+    const notifs=[];
+    // Compras
+    const snN=await getDocs(query(collection(db,"notifications"),where("uid","==",CU.uid)));
+    snN.forEach(d=>notifs.push({id:d.id,...d.data(),src:"notif"}));
+    // Seguidores completados
+    const snO=await getDocs(query(collection(db,"orders"),where("uid","==",CU.uid),where("type","==","seguidores"),where("status","==","done")));
+    snO.forEach(d=>notifs.push({id:d.id,...d.data(),src:"order",message:`✅ ¡Tus seguidores de ${({tiktok:"🎵 TikTok",igseg:"📸 IG",fb:"📘 Facebook"})[d.data().platform]||""} llegaron!`}));
+    notifs.sort((a,b)=>new Date(b.date||b.completedAt)-new Date(a.date||a.completedAt));
+    if(!notifs.length){list.innerHTML='<div class="empty-state"><div class="es-icon">🔔</div>Sin notificaciones aún</div>';return;}
+    list.innerHTML=notifs.map(n=>`
+      <div style="background:${!n.read&&!n.userRead?"rgba(0,230,118,.08)":"var(--card2)"};border:1px solid ${!n.read&&!n.userRead?"rgba(0,230,118,.25)":"var(--border)"};border-radius:14px;padding:14px;margin-bottom:8px;cursor:${n.orderId?"pointer":"default"}" onclick="${n.orderId?"openTicket('"+n.orderId+"')":""}" >
+        <div style="display:flex;align-items:flex-start;gap:8px">
+          <div style="font-size:1.3rem">${n.type==="key"?"🎁":n.type==="seguidores"?"📈":n.type==="anuncio"?"📢":"🛍️"}</div>
+          <div style="flex:1">
+            <div style="font-size:.87rem;font-weight:800">${n.title||n.message||"Notificación"}</div>
+            ${n.title&&n.message?`<div style="font-size:.75rem;color:var(--muted);margin-top:2px">${n.message.replace(n.title+": ","").replace("📢 ","")}</div>`:""}
+            <div style="font-size:.68rem;color:var(--muted);margin-top:2px">${new Date(n.date||n.completedAt||Date.now()).toLocaleDateString("es-MX",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}</div>
+            ${n.orderId?'<div style="font-size:.65rem;color:var(--green);font-weight:700;margin-top:4px">🧾 Ver ticket →</div>':""}
+          </div>
+          ${(!n.read&&!n.userRead)?'<span style="background:var(--green);color:#000;font-size:.58rem;font-weight:800;padding:2px 7px;border-radius:999px;flex-shrink:0">NUEVO</span>':""}
+        </div>
+      </div>`).join("");
+    // Marcar como leídas
+    snN.forEach(async d=>{if(!d.data().read)try{await updateDoc(doc(db,"notifications",d.id),{read:true});}catch(e){}});
+    snO.forEach(async d=>{if(!d.data().userRead)try{await updateDoc(doc(db,"orders",d.id),{userRead:true});}catch(e){}});
+    setTimeout(()=>{document.getElementById("notifBadge").style.display="none";document.getElementById("menuNotifCount").style.display="none";},1000);
+  }catch(e){list.innerHTML='<div class="empty-state">Error al cargar</div>';}
+}
+
+// ─── EXPONER AL HTML ──────────────────────────────────────
+
+// ─── HELPER: DESCUENTO AUTOMÁTICO ─────────────────────────
+function getDiscount(){
+  const p=UD.purchases||0;
+  if(p>=20)return 0.20;
+  if(p>=10)return 0.15;
+  if(p>=6)return 0.10;
+  if(p>=3)return 0.05;
+  return 0;
+}
+function getRank(p){
+  if(p>=20)return {label:"💎 Diamante",cls:"rank-diamante"};
+  if(p>=10)return {label:"🥇 Oro",cls:"rank-oro"};
+  if(p>=6)return {label:"🥈 Plata",cls:"rank-plata"};
+  if(p>=3)return {label:"🥉 Bronce",cls:"rank-bronce"};
+  return null;
+}
+function discountLabel(){
+  const d=getDiscount();
+  return d>0?`<span class="discount-badge">${(d*100).toFixed(0)}% DESC</span>`:"";
+}
+
+// ─── SIN SALDO OVERLAY ─────────────────────────────────────
+function contactWANoSaldo(){
+  const name=UD.name||"Usuario";
+  const uid=CU?.uid||"";
+  const msg=encodeURIComponent("Hola Baby Ale! Ocupo cargar saldo. Mi nombre es "+name+" y mi UID es: "+uid);
+  window.open("https://wa.me/526121697959?text="+msg,"_blank");
+  document.getElementById("nosaldoOverlay").classList.remove("open");
+}
+
+// ─── ADMIN TAB ─────────────────────────────────────────────
+function adminTab(id){
+  document.querySelectorAll(".admin-section").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  event.target.classList.add("active");
+  if(id==="tabEstadisticas")loadStats();
+  if(id==="tabReclamos")loadReclamos();
+  if(id==="tabTumbar")loadAdminTumbar();
+  if(id==="tabDescuentos")loadCoupons();
+  if(id==="tabRanking")loadAdminTopComp();
+  if(id==="tabUsuarios")loadAdminUsers();
+  if(id==="tabPedidos"){loadPendingSegOrders();loadAllOrders();}
+  if(id==="tabProductos")loadAdminProds();
+  if(id==="tabKeys")loadAdminKeys();
+  if(id==="tabPagos")loadAdminPayList();
+}
+
+// ─── BUSCAR POR UID ────────────────────────────────────────
+async function searchByUID(){
+  const uid=document.getElementById("uidSearchInput").value.trim();
+  if(!uid)return toast("Escribe un UID","err");
+  const box=document.getElementById("uidResult");
+  box.style.display="block";
+  box.innerHTML='<div class="loader"><div class="spin"></div></div>';
+  try{
+    const sn=await getDoc(doc(db,"users",uid));
+    if(!sn.exists()){box.innerHTML='<div style="color:#ff5252;font-size:.82rem">❌ Usuario no encontrado</div>';return;}
+    const u=sn.data();
+    const rank=getRank(u.purchases||0);
+    box.innerHTML=`<div style="font-size:.9rem;font-weight:800">${u.name||"Sin nombre"} ${rank?`<span class="rank-badge ${rank.cls}">${rank.label}</span>`:""}</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:3px">${u.email||""}</div>
+      <div style="font-size:.8rem;margin-top:6px">💰 Saldo: <strong style="color:var(--green)">$${u.saldo||0} MXN</strong> · 🛒 Compras: <strong>${u.purchases||0}</strong></div>
+      <div style="font-size:.68rem;color:var(--muted);margin-top:3px;word-break:break-all">🔑 UID: ${uid}</div>
+      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+        <button class="bsm bsm-grn" onclick="openRecharge('${uid}','${(u.name||'').replace(/'/g,"\'")}',${u.saldo||0})">💰 Recargar</button>
+        <button class="bsm bsm-blu" onclick="openEditName('${uid}','${(u.name||'').replace(/'/g,"\'")}')">✏️ Nombre</button>
+      </div>`;
+  }catch(e){box.innerHTML='<div style="color:#ff5252;font-size:.82rem">Error al buscar</div>';}
+}
+
+// ─── TICKET ────────────────────────────────────────────────
+let currentTicketOrderId=null;
+async function openTicket(orderId){
+  currentTicketOrderId=orderId;
+  try{
+    const sn=await getDoc(doc(db,"orders",orderId));
+    if(!sn.exists())return toast("Ticket no encontrado","err");
+    const o=sn.data();
+    const ticketUID="TKT-"+orderId.slice(0,8).toUpperCase();
+    document.getElementById("ticketUID").textContent=ticketUID;
+    const buyDate=new Date(o.date||Date.now());
+    const items=o.items||[];
+    let expiryInfo="";
+    let duracion="";
+    if(items.length){
+      // Try to get duracion from product
+      for(const item of items){
+        if(item.id){
+          try{
+            const pd=await getDoc(doc(db,"products",item.id));
+            if(pd.exists()&&pd.data().duracion){duracion=pd.data().duracion;break;}
+          }catch(e){}
+        }
+        if(item.duracion){duracion=item.duracion;break;}
+      }
+    }
+    if(duracion){
+      let expiry="";
+      const m=duracion.match(/(\d+)/);
+      if(m){
+        const days=duracion.toLowerCase().includes("año")?Number(m[1])*365:Number(m[1]);
+        const exp=new Date(buyDate);exp.setDate(exp.getDate()+days);
+        expiry=exp.toLocaleDateString("es-MX",{day:"2-digit",month:"long",year:"numeric"});
+      } else if(duracion.toLowerCase().includes("vital")){expiry="Vitalicio ∞";}
+      if(expiry)expiryInfo=`<div class="ticket-row"><span class="ticket-key">📅 Vence</span><span class="ticket-val" style="color:var(--gold)">${expiry}</span></div>`;
+    }
+    const itemNames=items.map(i=>i.name).join(", ")||"Servicio";
+    const disc=o.discount||0;
+    const rows=`
+      <div class="ticket-row"><span class="ticket-key">🛍️ Producto</span><span class="ticket-val">${itemNames}</span></div>
+      <div class="ticket-row"><span class="ticket-key">📅 Fecha de compra</span><span class="ticket-val">${buyDate.toLocaleDateString("es-MX",{day:"2-digit",month:"long",year:"numeric"})}</span></div>
+      ${duracion?`<div class="ticket-row"><span class="ticket-key">⏳ Duración</span><span class="ticket-val">${duracion}</span></div>`:""}
+      ${expiryInfo}
+      ${disc>0?`<div class="ticket-row"><span class="ticket-key">🏷️ Descuento aplicado</span><span class="ticket-val" style="color:var(--gold)">${(disc*100).toFixed(0)}%</span></div>`:""}
+      <div class="ticket-row"><span class="ticket-key">💰 Total pagado</span><span class="ticket-val" style="color:var(--green)">$${o.total||0} MXN</span></div>
+      <div class="ticket-row"><span class="ticket-key">👤 Cliente</span><span class="ticket-val">${o.name||"Usuario"}</span></div>
+      <div class="ticket-row"><span class="ticket-key">🔖 ID Ticket</span><span class="ticket-val" style="font-size:.65rem;color:var(--muted)">${ticketUID}</span></div>
+    `;
+    document.getElementById("ticketRows").innerHTML=rows;
+    document.getElementById("claimMsg").value="";
+    document.getElementById("ticketModal").classList.add("open");
+  }catch(e){toast("Error al abrir ticket","err");}
+}
+async function sendClaim(){
+  const msg=document.getElementById("claimMsg").value.trim();
+  if(!msg)return toast("Escribe tu mensaje primero","err");
+  if(!currentTicketOrderId)return;
+  try{
+    await addDoc(collection(db,"reclamos"),{
+      uid:CU.uid,name:UD.name||"Usuario",email:CU.email,
+      orderId:currentTicketOrderId,msg,date:new Date().toISOString(),read:false
+    });
+    document.getElementById("claimMsg").value="";
+    toast("✅ Reclamo enviado al admin","ok");
+    closeModal("ticketModal");
+  }catch(e){toast("Error al enviar","err");}
+}
+
+// ─── ADMIN: RECLAMOS ───────────────────────────────────────
+async function loadReclamos(){
+  const box=document.getElementById("adminReclamos");
+  try{
+    const sn=await getDocs(collection(db,"reclamos"));
+    document.getElementById("statReclamos").textContent=sn.size;
+    if(sn.empty){box.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);font-size:.85rem">✅ Sin reclamos</div>';return;}
+    const arr=[];sn.forEach(d=>arr.push({id:d.id,...d.data()}));
+    arr.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    box.innerHTML=arr.map(r=>`
+      <div style="background:var(--card2);border:1px solid ${r.read?"var(--border)":"rgba(255,82,82,.3)"};border-radius:14px;padding:14px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+          <div>
+            <div style="font-size:.85rem;font-weight:800">${r.name||"Usuario"} <span style="font-size:.65rem;color:var(--muted)">${r.email||""}</span></div>
+            <div style="font-size:.68rem;color:var(--muted)">${new Date(r.date).toLocaleDateString("es-MX",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}</div>
+          </div>
+          ${!r.read?'<span style="background:var(--pink);color:#fff;font-size:.55rem;font-weight:800;padding:2px 7px;border-radius:999px">NUEVO</span>':""}
+        </div>
+        <div style="font-size:.82rem;color:var(--text);background:rgba(255,255,255,.04);border-radius:10px;padding:10px;margin-bottom:8px">"${r.msg}"</div>
+        <div style="font-size:.65rem;color:var(--muted)">Ticket: ${r.orderId||"—"}</div>
+        ${!r.read?`<button class="bsm bsm-grn" style="margin-top:8px" onclick="markReclamoRead('${r.id}')">✅ Marcar leído</button>`:""}
+      </div>`).join("");
+  }catch(e){box.innerHTML='<div style="color:var(--muted);font-size:.8rem">Error</div>';}
+}
+async function markReclamoRead(id){
+  try{await updateDoc(doc(db,"reclamos",id),{read:true});loadReclamos();}catch(e){}
+}
+
+// ─── ADMIN: ALL ORDERS ─────────────────────────────────────
+async function loadAllOrders(){
+  const box=document.getElementById("adminAllOrders");
+  if(!box)return;
+  try{
+    const sn=await getDocs(collection(db,"orders"));
+    const arr=[];sn.forEach(d=>arr.push({id:d.id,...d.data()}));
+    arr.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    let ingresos=0;arr.forEach(o=>ingresos+=o.total||0);
+    document.getElementById("statIngresos").textContent="$"+ingresos;
+    document.getElementById("statOrds").textContent=arr.length;
+    if(!arr.length){box.innerHTML='<div style="color:var(--muted);font-size:.82rem;text-align:center;padding:16px">Sin pedidos aún</div>';return;}
+    box.innerHTML=arr.slice(0,30).map(o=>{
+      const items=(o.items||[]).map(i=>i.name).join(", ")||o.type||"—";
+      return `<div style="padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-size:.82rem;font-weight:700">${o.name||"Usuario"}</div>
+            <div style="font-size:.72rem;color:var(--muted)">${items}</div>
+            <div style="font-size:.65rem;color:var(--muted)">${new Date(o.date||Date.now()).toLocaleDateString("es-MX",{day:"2-digit",month:"short",year:"numeric"})}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:.88rem;font-weight:800;color:var(--green)">$${o.total||0}</div>
+            <div style="font-size:.65rem;color:var(--muted)">${o.id.slice(0,6)}</div>
+          </div>
+        </div>
+      </div>`;
+    }).join("");
+    if(arr.length>30)box.innerHTML+=`<div style="text-align:center;font-size:.75rem;color:var(--muted);padding:8px">Mostrando 30 de ${arr.length} pedidos</div>`;
+  }catch(e){box.innerHTML='<div style="color:var(--muted)">Error</div>';}
+}
+
+// ─── ESTADÍSTICAS ─────────────────────────────────────────
+async function loadStats(){
+  const box=document.getElementById("statsContent");
+  const boxProd=document.getElementById("statsTopProds");
+  const boxIng=document.getElementById("statsIngresos");
+  try{
+    const [snU,snO,snP]=await Promise.all([getDocs(collection(db,"users")),getDocs(collection(db,"orders")),getDocs(collection(db,"products"))]);
+    let totalSaldo=0,totalCompras=0,totalIngresos=0;
+    snU.forEach(d=>{totalSaldo+=d.data().saldo||0;totalCompras+=d.data().purchases||0;});
+    const prodCount={};
+    snO.forEach(d=>{
+      const o=d.data();totalIngresos+=o.total||0;
+      (o.items||[]).forEach(i=>{prodCount[i.name]=(prodCount[i.name]||0)+1;});
+    });
+    box.innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div class="stat-card"><div class="stat-num" style="color:var(--blue)">${snU.size}</div><div class="stat-lbl">👥 Usuarios</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--green)">$${totalIngresos}</div><div class="stat-lbl">💰 Total Ingresos</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--gold)">${snO.size}</div><div class="stat-lbl">🛍️ Pedidos</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--pink)">$${totalSaldo}</div><div class="stat-lbl">💳 Saldo en sistema</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:#c084fc">${totalCompras}</div><div class="stat-lbl">🛒 Compras totales</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--green)">${snP.size}</div><div class="stat-lbl">📦 Productos</div></div>
+      </div>`;
+    const sorted=Object.entries(prodCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const max=sorted[0]?sorted[0][1]:1;
+    boxProd.innerHTML=sorted.length?sorted.map(([name,cnt])=>`
+      <div class="chart-bar-wrap">
+        <div class="chart-bar-lbl">${name}</div>
+        <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${Math.round(cnt/max*100)}%"></div></div>
+        <div class="chart-bar-val">${cnt}</div>
+      </div>`).join(""):'<div style="color:var(--muted);font-size:.8rem">Sin datos aún</div>';
+    // Ingresos por mes
+    const byMonth={};
+    snO.forEach(d=>{
+      const o=d.data();
+      const m=new Date(o.date||Date.now()).toLocaleDateString("es-MX",{month:"short",year:"2-digit"});
+      byMonth[m]=(byMonth[m]||0)+(o.total||0);
+    });
+    const mkeys=Object.keys(byMonth).slice(-6);
+    const maxM=Math.max(...mkeys.map(k=>byMonth[k]),1);
+    boxIng.innerHTML=mkeys.length?mkeys.map(k=>`
+      <div class="chart-bar-wrap">
+        <div class="chart-bar-lbl">${k}</div>
+        <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${Math.round(byMonth[k]/maxM*100)}%"></div></div>
+        <div class="chart-bar-val">$${byMonth[k]}</div>
+      </div>`).join(""):'<div style="color:var(--muted);font-size:.8rem">Sin datos aún</div>';
+  }catch(e){box.innerHTML='<div style="color:var(--muted)">Error al cargar</div>';}
+}
+
+// ─── CUPONES ──────────────────────────────────────────────
+let activeCoupon=null;
+async function createCoupon(){
+  const code=document.getElementById("couponCode").value.trim().toUpperCase();
+  const pct=Number(document.getElementById("couponPct").value);
+  const uses=Number(document.getElementById("couponUses").value)||999;
+  if(!code||!pct||pct<1||pct>80)return toast("Código y % son obligatorios (1-80%)","err");
+  try{
+    await addDoc(collection(db,"coupons"),{code,pct,uses,usedBy:[],createdAt:new Date().toISOString(),active:true});
+    toast("✅ Cupón creado","ok");
+    document.getElementById("couponCode").value="";document.getElementById("couponPct").value="";document.getElementById("couponUses").value="";
+    loadCoupons();
+  }catch(e){toast("Error","err");}
+}
+async function loadCoupons(){
+  const box=document.getElementById("couponList");if(!box)return;
+  try{
+    const sn=await getDocs(collection(db,"coupons"));
+    if(sn.empty){box.innerHTML='<div style="color:var(--muted);font-size:.78rem">Sin cupones</div>';return;}
+    box.innerHTML="";
+    sn.forEach(d=>{
+      const cp=d.data();
+      const r=document.createElement("div");r.className="key-row";
+      r.innerHTML=`<div><div class="key-code" style="color:var(--gold)">🎟️ ${cp.code}</div><div class="key-meta">${cp.pct}% desc · ${(cp.usedBy||[]).length}/${cp.uses} usos</div></div><button class="bsm bsm-red" onclick="deleteCoupon('${d.id}')">🗑️</button>`;
+      box.appendChild(r);
+    });
+  }catch(e){}
+}
+async function deleteCoupon(id){if(!confirm("¿Eliminar cupón?"))return;try{await deleteDoc(doc(db,"coupons",id));loadCoupons();}catch(e){}}
+async function applyCoupon(){
+  const code=document.getElementById("couponInput").value.trim().toUpperCase();
+  const res=document.getElementById("couponResult");
+  if(!code)return;
+  try{
+    const q=query(collection(db,"coupons"),where("code","==",code));
+    const sn=await getDocs(q);
+    if(sn.empty){res.innerHTML='<span style="color:#ff5252">❌ Cupón no válido</span>';return;}
+    const d=sn.docs[0];const cp=d.data();
+    if(!cp.active){res.innerHTML='<span style="color:#ff5252">❌ Cupón inactivo</span>';return;}
+    if((cp.usedBy||[]).includes(CU.uid)){res.innerHTML='<span style="color:#ff5252">❌ Ya usaste este cupón</span>';return;}
+    if((cp.usedBy||[]).length>=cp.uses){res.innerHTML='<span style="color:#ff5252">❌ Cupón agotado</span>';return;}
+    activeCoupon={id:d.id,code,pct:cp.pct};
+    res.innerHTML=`<span style="color:var(--green)">✅ Cupón aplicado: -${cp.pct}% en tu próxima compra</span>`;
+    toast("🎟️ Cupón aplicado: "+code+" (-"+cp.pct+"%)","ok");
+  }catch(e){res.innerHTML='<span style="color:#ff5252">Error</span>';}
+}
+
+// ─── TUMBAR NÚMEROS ────────────────────────────────────────
+function openTumbar(){document.getElementById("tumbarModal").classList.add("open");}
+async function sendTumbarRequest(){
+  const num=document.getElementById("tumbarNumero").value.trim();
+  const msg=document.getElementById("tumbarMensaje").value.trim();
+  if(!num)return toast("Ingresa el número","err");
+  try{
+    await addDoc(collection(db,"tumbar"),{uid:CU.uid,name:UD.name||"Usuario",email:CU.email,numero:num,mensaje:msg,date:new Date().toISOString(),status:"pendiente"});
+    toast("✅ Solicitud enviada. El admin te contactará para el pago","ok");
+    closeModal("tumbarModal");
+    // WA directo
+    const waMsg=encodeURIComponent("Hola! Soy "+( UD.name||"Usuario")+" y acabo de enviar una solicitud para tumbar el número: "+num+". Por favor coordina el pago de $450 MXN.");
+    setTimeout(()=>window.open("https://wa.me/526121697959?text="+waMsg,"_blank"),500);
+  }catch(e){toast("Error al enviar","err");}
+}
+async function loadAdminTumbar(){
+  const box=document.getElementById("adminTumbarList");if(!box)return;
+  try{
+    const sn=await getDocs(collection(db,"tumbar"));
+    if(sn.empty){box.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);font-size:.85rem">Sin solicitudes</div>';return;}
+    const arr=[];sn.forEach(d=>arr.push({id:d.id,...d.data()}));
+    arr.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    box.innerHTML=arr.map(r=>`
+      <div style="background:linear-gradient(135deg,rgba(147,51,234,.06),rgba(109,40,217,.06));border:1px solid rgba(147,51,234,.2);border-radius:14px;padding:14px;margin-bottom:10px">
+        <div style="font-size:.85rem;font-weight:800">${r.name} <span style="font-size:.65rem;color:var(--muted)">${r.email}</span></div>
+        <div style="margin-top:6px"><span style="font-size:.78rem;color:var(--muted)">📱 Número: </span><strong style="color:#c084fc">${r.numero}</strong></div>
+        ${r.mensaje?`<div style="font-size:.75rem;color:var(--muted);margin-top:4px">"${r.mensaje}"</div>`:""}
+        <div style="font-size:.65rem;color:var(--muted);margin-top:4px">${new Date(r.date).toLocaleDateString("es-MX",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <span style="font-size:.68rem;font-weight:800;padding:3px 10px;border-radius:999px;${r.status==="pendiente"?"background:rgba(255,167,38,.15);color:#ffa726;border:1px solid rgba(255,167,38,.3)":"background:rgba(0,230,118,.15);color:var(--green);border:1px solid rgba(0,230,118,.3)"}">${r.status}</span>
+          ${r.status==="pendiente"?`<button class="bsm bsm-grn" onclick="markTumbarDone('${r.id}')">✅ Marcar pagado</button>`:""}
+        </div>
+      </div>`).join("");
+  }catch(e){box.innerHTML='<div style="color:var(--muted)">Error</div>';}
+}
+async function markTumbarDone(id){try{await updateDoc(doc(db,"tumbar",id),{status:"pagado"});loadAdminTumbar();toast("✅ Marcado como pagado","ok");}catch(e){}}
+
+// ─── BROADCAST VIP ─────────────────────────────────────────
+async function sendBroadcastVIP(){
+  const title=document.getElementById("broadTitle").value.trim();
+  const msg=document.getElementById("broadMsg").value.trim();
+  if(!title||!msg)return toast("Completa título y mensaje","err");
+  try{
+    const sn=await getDocs(collection(db,"users"));
+    let count=0;
+    const ps=[];
+    sn.forEach(d=>{if((d.data().purchases||0)>=10)ps.push(addDoc(collection(db,"notifications"),{uid:d.id,type:"anuncio",title:"⭐ "+title,message:msg,date:new Date().toISOString(),read:false}));});
+    await Promise.all(ps);count=ps.length;
+    toast("📢 Enviado a "+count+" usuarios VIP","ok");
+    document.getElementById("broadTitle").value="";document.getElementById("broadMsg").value="";
+  }catch(e){toast("Error","err");}
+}
+
+// ─── RANK EN PERFIL ────────────────────────────────────────
+function renderProfileRank(){
+  const p=UD.purchases||0;
+  const rank=getRank(p);
+  const disc=getDiscount();
+  const el=document.getElementById("profileRankBadge");
+  if(!el)return;
+  if(rank){el.innerHTML=`<span class="rank-badge ${rank.cls}">${rank.label}</span>${disc>0?`<span class="discount-badge" style="margin-left:6px">${(disc*100).toFixed(0)}% DESC</span>`:""}`;}
+  else el.innerHTML="";
+}
+
+// ─── TOP COMPRADORES: mínimo 10 ────────────────────────────
+// (patch renderTopCompradores to require 10+)
+
+window.loginEmail=loginEmail;window.adminTab=adminTab;window.searchByUID=searchByUID;window.openTicket=openTicket;window.sendClaim=sendClaim;window.markReclamoRead=markReclamoRead;window.loadAllOrders=loadAllOrders;window.loadStats=loadStats;window.createCoupon=createCoupon;window.deleteCoupon=deleteCoupon;window.applyCoupon=applyCoupon;window.openTumbar=openTumbar;window.sendTumbarRequest=sendTumbarRequest;window.loadAdminTumbar=loadAdminTumbar;window.markTumbarDone=markTumbarDone;window.sendBroadcastVIP=sendBroadcastVIP;window.contactWANoSaldo=contactWANoSaldo;window.loadReclamos=loadReclamos;window.register=register;window.loginGoogle=loginGoogle;window.logout=logout;window.show=show;window.switchTab=switchTab;window.closeModal=closeModal;window.toggleMenu=toggleMenu;window.menuGo=menuGo;window.toggleCurrency=toggleCurrency;window.addToCart=addToCart;window.removeFromCart=removeFromCart;window.clearCart=clearCart;window.buy=buy;window.useKey=useKey;window.copyKey=copyKey;window.pickSeg=pickSeg;window.openSegModal=openSegModal;window.calcSeg=calcSeg;window.confirmSeg=confirmSeg;window.addProduct=addProduct;window.deleteProduct=deleteProduct;window.createKey=createKey;window.deleteKey=deleteKey;window.openRecharge=openRecharge;window.doRecharge=doRecharge;window.openEditName=openEditName;window.doEditName=doEditName;window.openResetPass=openResetPass;window.doResetPass=doResetPass;window.changeSelfName=changeSelfName;window.changeSelfPhone=changeSelfPhone;window.changeSelfUsername=changeSelfUsername;window.changeSelfPass=changeSelfPass;window.toggleSetting=toggleSetting;window.sendVerifyCode=sendVerifyCode;window.confirmVerifyCode=confirmVerifyCode;window.markSegDone=markSegDone;window.resetTopCompradores=resetTopCompradores;window.removeFromTop=removeFromTop;window.loadAdminTopComp=loadAdminTopComp;window.checkUserNotifications=checkUserNotifications;window.renderNotifList=renderNotifList;window.copyText=copyText;window.toggleDis=toggleDis;window.delUser=delUser;window.contactWA=contactWA;window.addPayMethod=addPayMethod;window.deletePayMethod=deletePayMethod;window.sendBroadcast=sendBroadcast;
+updateBadge();
+</script>
+</body>
+</html>
