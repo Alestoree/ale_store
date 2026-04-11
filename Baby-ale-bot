@@ -1,0 +1,56 @@
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// BOT DE TELEGRAM â€” Baby Ale Ventas
+// Servidor Node.js â€” Sube a Railway.app GRATIS
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// PASOS:
+// 1. Ve a railway.app â†’ crea cuenta gratis con GitHub
+// 2. New Project â†’ Deploy from GitHub repo (sube este archivo)
+// 3. Variables de entorno: BOT_TOKEN=tu_token  FIREBASE_CONFIG={"type":"service_account",...}
+// 4. Deploy â†’ bot activo 24/7
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+const TelegramBot = require('node-telegram-bot-api');
+const admin = require('firebase-admin');
+const TOKEN = process.env.BOT_TOKEN;
+const bot = new TelegramBot(TOKEN, { polling: true });
+try {
+  const sa = JSON.parse(process.env.FIREBASE_CONFIG || '{}');
+  if (sa.project_id) admin.initializeApp({ credential: admin.credential.cert(sa) });
+} catch(e) { console.log('Firebase no configurado'); }
+const db = admin.apps.length ? admin.firestore() : null;
+
+bot.onText(/\/start/, async (msg) => {
+  const chatId = msg.chat.id; const name = msg.from.first_name || 'amig@';
+  if (db) { try { await db.collection('telegramUsers').doc(String(msg.from.id)).set({ chatId, name, username: msg.from.username||'', date: new Date().toISOString() }, { merge:true }); } catch(e){} }
+  let welcome = `Hola ${name} ðŸ‘‹ Bienvenido a Baby Ale ðŸ’•\n\nUsa los botones para navegar:`;
+  if (db) { try { const c=(await db.collection('config').doc('telegramBot').get()).data(); if(c?.msgWelcome) welcome=c.msgWelcome.replace('{nombre}',name); } catch(e){} }
+  bot.sendMessage(chatId, welcome, { reply_markup:{ keyboard:[['/catalogo','/faq'],['/saldo','/contacto']], resize_keyboard:true } });
+});
+
+bot.onText(/\/catalogo/, async (msg) => {
+  const chatId = msg.chat.id;
+  if (!db) { bot.sendMessage(chatId,'ðŸ“¦ CatÃ¡logo no disponible aÃºn.'); return; }
+  try {
+    const snap = await db.collection('products').where('available','==',true).get();
+    if (snap.empty) { bot.sendMessage(chatId,'ðŸ“¦ Sin productos disponibles por ahora.'); return; }
+    let text = 'ðŸ›ï¸ *CatÃ¡logo Baby Ale* ðŸ’•\n\n';
+    snap.forEach(d=>{ const p=d.data(); text+=`*${p.name}* â€” $${p.price} MXN\n${p.description||''}\n\n`; });
+    bot.sendMessage(chatId, text, { parse_mode:'Markdown' });
+  } catch(e) { bot.sendMessage(chatId,'âŒ Error al cargar catÃ¡logo.'); }
+});
+
+bot.onText(/\/faq/, async (msg) => {
+  const chatId = msg.chat.id;
+  let faq = 'â“ *Preguntas Frecuentes*\n\nâ€¢ Â¿CÃ³mo compro? EscrÃ­benos\nâ€¢ Â¿Tiempo de entrega? 24-48 hrs\nâ€¢ Â¿Soporte? /contacto';
+  if (db) { try { const c=(await db.collection('config').doc('telegramBot').get()).data(); if(c?.msgFaq) faq=c.msgFaq; } catch(e){} }
+  bot.sendMessage(chatId, faq, { parse_mode:'Markdown' });
+});
+
+bot.onText(/\/saldo/, (msg) => { bot.sendMessage(msg.chat.id,'ðŸ’° Entra a la app para ver tu saldo e inicia sesiÃ³n.'); });
+bot.onText(/\/contacto/, async (msg) => {
+  let admin = 'el administrador';
+  if (db) { try { const c=(await db.collection('config').doc('telegramBot').get()).data(); if(c?.adminUser) admin=c.adminUser; } catch(e){} }
+  bot.sendMessage(msg.chat.id,`ðŸ“© Contacta a ${admin} para soporte.\nâ° Horario: Lun-Vie 9am-6pm`);
+});
+
+console.log('ðŸ¤– Bot Baby Ale Telegram activo!');
+// package.json: { "main":"bot.js","dependencies":{"node-telegram-bot-api":"^0.64.0","firebase-admin":"^11.0.0"} }
